@@ -1,0 +1,22 @@
+{
+  "name": "node-audio-mixer",
+  "version": "0.0.0",
+  "description": "Audio mixer for mixing PCM stream",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pcm",
+    "stream",
+    "audio",
+    "mixer"
+  ],
+  "author": "Alex Pl",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.4.8",
+    "tslib": "^2.6.1",
+    "typescript": "^5.1.6"
+  }
+}
