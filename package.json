@@ -1,10 +1,15 @@
 {
   "name": "node-audio-mixer",
-  "version": "0.0.0",
-  "description": "Audio mixer for mixing PCM stream",
-  "main": "./dist/index.js",
+  "version": "1.0.0",
+  "description": "PCM audio mixer with customizable parameters",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "prepublishOnly": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlexPl3331/node-audio-mixer"
   },
   "keywords": [
     "pcm",
@@ -12,11 +17,10 @@
     "audio",
     "mixer"
   ],
-  "author": "Alex Pl",
+  "author": "Alex Pl (https://github.com/AlexPl3331)",
   "license": "MIT",
-  "devDependencies": {
-    "@types/node": "^20.4.8",
-    "tslib": "^2.6.1",
-    "typescript": "^5.1.6"
+  "dependencies": {
+    "@types/node": "18.17.1",
+    "typescript": "^5.2.2"
   }
 }

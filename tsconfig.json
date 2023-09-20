@@ -1,28 +1,28 @@
 {
     "compilerOptions": {
         "target": "es2022",
-        "module": "NodeNext",
+        "module": "CommonJS",
         "lib": [
-            "ES2022"
+            "es2023"
         ],
-        "moduleResolution": "NodeNext",
-        "outDir": "dist",
+        "moduleResolution": "Node",
+        "outDir": "./dist",
         "allowSyntheticDefaultImports": true,
         "importHelpers": true,
         "alwaysStrict": true,
-        "sourceMap": false,
+        "declaration": true,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
+        "sourceMap": false,
         "noImplicitAny": false,
         "noImplicitThis": false,
         "strictNullChecks": false
     },
     "include": [
         "src/**/*",
-        "examples/**/*",
-        "tests/**/*"
-    ]
+        "examples/**/*"
+    ],
 }
