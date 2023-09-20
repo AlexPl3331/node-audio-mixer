@@ -1,0 +1,28 @@
+{
+    "compilerOptions": {
+        "target": "es2022",
+        "module": "CommonJS",
+        "lib": [
+            "es2023"
+        ],
+        "moduleResolution": "Node",
+        "outDir": "./dist",
+        "allowSyntheticDefaultImports": true,
+        "importHelpers": true,
+        "alwaysStrict": true,
+        "declaration": true,
+        "forceConsistentCasingInFileNames": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "sourceMap": false,
+        "noImplicitAny": false,
+        "noImplicitThis": false,
+        "strictNullChecks": false
+    },
+    "include": [
+        "src/**/*",
+        "examples/**/*"
+    ],
+}
