@@ -4,6 +4,10 @@
   "description": "PCM audio mixer with customizable parameters",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist/**",
+    "sounds/**"
+  ],
   "scripts": {
     "prepublishOnly": "tsc"
   },
