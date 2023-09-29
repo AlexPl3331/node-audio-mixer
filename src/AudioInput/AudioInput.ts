@@ -16,6 +16,7 @@ interface AudioInputArgs {
     volume?: number,
     bitDepth?: AudioBitDepth,
     endianness?: AudioEndianess,
+    forceClose?: boolean
 }
 
 class AudioInput extends Writable {
@@ -24,6 +25,7 @@ class AudioInput extends Writable {
     private volume: number;
     private bitDepth: AudioBitDepth;
     private endianness: AudioEndianess;
+    private forceClose: boolean;
 
     private audioMixerArgs: AudioMixerArgs;
     private removeSelf: (audioInput: AudioInput) => void;
@@ -47,6 +49,7 @@ class AudioInput extends Writable {
         this.volume = args.volume ?? 100;
         this.bitDepth = args.bitDepth ?? 16;
         this.endianness = args.endianness ?? endianness();
+        this.forceClose = args.forceClose ?? false;
 
         this.audioMixerArgs = mixerArgs || defaultAudioMixerArgs;
 
@@ -55,7 +58,7 @@ class AudioInput extends Writable {
         this.once("close", () => {
             this.inputClosed = true;
 
-            if (this.audioBuffer.length > 0) return;
+            if (this.audioBuffer.length > 0 && !this.forceClose) return;
 
             this.removeSelf(this);
         });
@@ -65,7 +68,7 @@ class AudioInput extends Writable {
     public _write(chunk: Buffer, _: BufferEncoding, callback: (error?: Error) => void): void {
         if (this.inputClosed) return;
 
-        const inputParams = {
+        const inputParams: AudioInputArgs = {
             sampleRate: this.sampleRate,
             channels: this.channels,
             bitDepth: this.bitDepth,
@@ -92,7 +95,7 @@ class AudioInput extends Writable {
     public close(): void {
         this.inputClosed = true;
 
-        if (this.audioBuffer.length === 0) this.removeSelf(this);
+        if (this.audioBuffer.length === 0 || this.forceClose) this.removeSelf(this);
 
         this.end();
     }
@@ -120,7 +123,7 @@ class AudioInput extends Writable {
         {
             const bytesPerSample = this.audioMixerArgs.bitDepth / 8;
 
-            const silentChunkLength = (highWaterMark - chunk.length) * bytesPerSample
+            const silentChunkLength = (highWaterMark - chunk.length) * bytesPerSample;
             const silentChunk = Buffer.alloc(silentChunkLength);
 
             chunk = Buffer.concat([chunk, silentChunk]);
