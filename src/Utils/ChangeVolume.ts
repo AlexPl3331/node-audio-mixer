@@ -1,9 +1,9 @@
-import { AudioBitDepth, AudioEndianess } from "../Types/AudioTypes"
+import { AudioBitDepth, AudioEndianness } from "../Types/AudioTypes"
 
 interface ChangeVolumeArgs {
     volume: number
     bitDepth: AudioBitDepth
-    endianness: AudioEndianess
+    endianness: AudioEndianness
 }
 
 

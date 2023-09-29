@@ -2,6 +2,6 @@ type AudioSampleRate = 8000 | 11025 | 16000 | 22050 | 24000 | 32000 | 44100 | 48
 
 type AudioBitDepth = 8 | 24 | 16 | 32
 
-type AudioEndianess = "LE" | "BE"
+type AudioEndianness = "LE" | "BE"
 
-export { AudioSampleRate, AudioBitDepth, AudioEndianess }
+export { AudioSampleRate, AudioBitDepth, AudioEndianness }

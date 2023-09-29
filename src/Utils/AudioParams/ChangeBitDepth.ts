@@ -1,8 +1,8 @@
-import { AudioBitDepth, AudioEndianess } from "../../Types/AudioTypes"
+import { AudioBitDepth, AudioEndianness } from "../../Types/AudioTypes"
 
 interface BitDepthParams {
     bitDepth: AudioBitDepth,
-    endianness: AudioEndianess
+    endianness: AudioEndianness
 }
 
 

@@ -2,7 +2,7 @@ import { Writable } from "stream"
 import { endianness } from "os"
 
 import { AudioMixerArgs } from "../AudioMixer/AudioMixer"
-import { AudioSampleRate, AudioBitDepth, AudioEndianess } from "../Types/AudioTypes"
+import { AudioSampleRate, AudioBitDepth, AudioEndianness } from "../Types/AudioTypes"
 
 import changeVolume from "../Utils/ChangeVolume"
 import changeSampleParams from "../Utils/ChangeSampleParams"
@@ -15,16 +15,17 @@ interface AudioInputArgs {
     channels?: number,
     volume?: number,
     bitDepth?: AudioBitDepth,
-    endianness?: AudioEndianess,
+    endianness?: AudioEndianness,
     forceClose?: boolean
 }
+
 
 class AudioInput extends Writable {
     private sampleRate: AudioSampleRate;
     private channels: number;
     private volume: number;
     private bitDepth: AudioBitDepth;
-    private endianness: AudioEndianess;
+    private endianness: AudioEndianness;
     private forceClose: boolean;
 
     private audioMixerArgs: AudioMixerArgs;
