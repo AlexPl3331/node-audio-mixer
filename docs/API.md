@@ -35,7 +35,7 @@ This class represents an audio mixer. It extends the `Readable`.
   - `highWaterMark` {Number} Chunk size of the audio mixer's output. <br> Default: `null`.
   
   - `delayTime` {Number | Function} Audio mixing with a delay of n milliseconds. <br> Default: `1`.
-
+  
   - `autoClose` {Boolean} The audio mixer automatically closes after all inputs are closed. <br> Default: `false`.
 
 Create a new AudioMixer instance.
@@ -57,7 +57,7 @@ Sets the volume of the audio mixer.
 ### mixer.createAudioInput(inputArgs)
 
 - `inputArgs` {Object}
-
+  
   - `sampleRate` {Number} Input sample rate in the audio input. <br> Default: `48000`.
   
   - `channels` {Number} Number of input channels in the audio input. <br> Default: `1`.
@@ -67,6 +67,8 @@ Sets the volume of the audio mixer.
   - `bitDepth` {Number} Input bit depth in the audio input. <br> Default: `16`.
   
   - `endianness` {String} Input endianness in the audio input. <br> Default: `The endianness of your CPU`.
+  
+  - `forceClose` {Boolean} Closes audio input even when it contains data <br> Default: `false`.
 
 Create a new AudioInput instance and add it to the AudioMixer.
 
@@ -75,10 +77,6 @@ Create a new AudioInput instance and add it to the AudioMixer.
 - `audioInput` {AudioInput}
 
 Remove an AudioInput from the AudioMixer if it exists.
-
-> Note: AudioInput is automatically removed from the AudioMixer when it is closed.
-> Note: If the AudioInput still contains data, it will be removed after it becomes empty.
-> In the future, a `forceClose` feature will be added in the AudioInput.
 
 ### mixer.close()
 
@@ -91,7 +89,9 @@ This class represents an audio input. It extends the `Writable`.
 ### new AudioInput(inputArgs, mixerArgs, removeFunction?)
 
  - `inputArgs` {[AudioInputArgs](#mixercreateaudioinputinputargs)} Audio input arguments.
+  
  - `mixerArgs` {[AudioMixerArgs](#new-audiomixermixerargs)} Audio mixer arguments.
+  
  - `removeFunction` {Function} Function to remove an audio input from the audio mixer.
 
 Create a new AudioInput instance.
@@ -115,3 +115,7 @@ The available audio length from the input.
 ### input.close()
 
 Closes the audio input.
+
+> Note: AudioInput is automatically removed from the AudioMixer when it is closed.
+> If the AudioInput still contains data, it will be removed after it becomes empty.
+> To immediately close the audio input, set the `forceClose` option to `true`.
