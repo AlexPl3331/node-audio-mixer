@@ -1,9 +1,9 @@
-import { AudioBitDepth, AudioEndianess } from "../../Types/AudioTypes"
+import { AudioBitDepth, AudioEndianness } from "../../Types/AudioTypes"
 
 interface SampleRateParams {
     sampleRate: number,
     bitDepth?: AudioBitDepth,
-    endianness: AudioEndianess
+    endianness: AudioEndianness
 }
 
 const changeSampleRate = (inputChunk: Buffer, inputArgs: SampleRateParams, outputArgs: SampleRateParams): Buffer => {

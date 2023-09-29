@@ -2,7 +2,7 @@ import { Readable } from "stream"
 import { endianness } from "os"
 
 import { AudioInput, AudioInputArgs } from "../AudioInput/AudioInput"
-import { AudioSampleRate, AudioBitDepth, AudioEndianess } from "../Types/AudioTypes"
+import { AudioSampleRate, AudioBitDepth, AudioEndianness } from "../Types/AudioTypes"
 
 import mixAudioChunks from "../Utils/mixAudioChunks"
 import changeVolume from "../Utils/ChangeVolume"
@@ -15,7 +15,7 @@ interface AudioMixerArgs {
     channels?: number
     volume?: number
     bitDepth?: AudioBitDepth
-    endianness?: AudioEndianess
+    endianness?: AudioEndianness
     highWaterMark?: number | null
     delayTime?: delayTimeType
     autoClose?: boolean
@@ -27,7 +27,7 @@ class AudioMixer extends Readable {
     private channels: number;
     private volume: number;
     private bitDepth: AudioBitDepth;
-    private endianness: AudioEndianess;
+    private endianness: AudioEndianness;
     private highWaterMark: number | null;
     private delayTime: delayTimeType;
     private autoClose: boolean;
