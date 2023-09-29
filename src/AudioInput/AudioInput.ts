@@ -61,6 +61,8 @@ class AudioInput extends Writable {
 
             if (this.audioBuffer.length > 0 && !this.forceClose) return;
 
+            this.audioBuffer = Buffer.alloc(0);
+
             this.removeSelf(this);
         });
     }
@@ -96,8 +98,11 @@ class AudioInput extends Writable {
     public close(): void {
         this.inputClosed = true;
 
-        if (this.audioBuffer.length === 0 || this.forceClose) this.removeSelf(this);
+        if (this.audioBuffer.length > 0 && !this.forceClose) { this.end(); return; };
 
+        this.audioBuffer = Buffer.alloc(0);
+
+        this.removeSelf(this);
         this.end();
     }
 
