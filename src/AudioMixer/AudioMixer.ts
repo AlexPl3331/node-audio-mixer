@@ -55,11 +55,13 @@ class AudioMixer extends Readable {
 
 
     public _read(): void {
-        let chunk: Buffer = Buffer.alloc(0);
-
         if (this.inputs.length === 0) return;
 
         const chunks: Array<Buffer> = [];
+
+        this.inputs.forEach(async (i) => { if (i.availableAudioLength > 0) chunks.push(i.readAudioChunk(this.highWaterMark)); });
+
+        if (chunks.length === 0) return;
 
         const mixerArgs: AudioMixerArgs = {
             sampleRate: this.sampleRate,
@@ -70,19 +72,16 @@ class AudioMixer extends Readable {
             highWaterMark: this.highWaterMark
         }
 
-        const chunkSize = this.highWaterMark || Math.min(...this.inputs.map(input => input.availableAudioLength || 0));
-
-        this.inputs.forEach(async (i) => chunks.push(i.readAudioChunk(chunkSize)));
-
-        chunk = mixAudioChunks(chunks, chunkSize, mixerArgs);
-
         const changeVolumeArgs = {
             volume: this.volume,
             bitDepth: this.bitDepth,
             endianness: this.endianness
         }
 
-        this.unshift(changeVolume(chunk, changeVolumeArgs));
+        const mixedChunkSize = this.highWaterMark ?? Math.min(...chunks.map(chunk => chunk.length));
+        let mixedChunk: Buffer = mixAudioChunks(chunks, mixedChunkSize, mixerArgs);
+
+        this.unshift(changeVolume(mixedChunk, changeVolumeArgs));
     }
 
     public setVolume(volume: number): this {
