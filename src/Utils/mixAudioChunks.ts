@@ -7,12 +7,7 @@ const mixAudioChunks = (chunks: Array<Buffer>, size: number, mixerArgs: AudioMix
 
     for (let index = 0; index < size; index += bytesPerSample)
     {
-        let mixedSample = chunks.map((chunk) => {
-            if (index < chunk.length)
-                return chunk[`readInt${mixerArgs.endianness}`](index, bytesPerSample);
-
-            return 0;
-        })
+        let mixedSample: number = chunks.map((chunk) => chunk[`readInt${mixerArgs.endianness}`](index, bytesPerSample))
             .reduce((sample, nextSample) => sample + nextSample);
 
         mixedSample /= chunks.length;

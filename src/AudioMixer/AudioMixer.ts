@@ -57,10 +57,7 @@ class AudioMixer extends Readable {
     public _read(): void {
         if (this.inputs.length === 0) return;
 
-        const chunks: Array<Buffer> = [];
-
-        this.inputs.forEach(async (i) => { if (i.availableAudioLength > 0) chunks.push(i.readAudioChunk(this.highWaterMark)); });
-
+        const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(this.highWaterMark)).filter((chunk: Buffer) => chunk.length > 0);
         if (chunks.length === 0) return;
 
         const mixerArgs: AudioMixerArgs = {

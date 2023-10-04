@@ -96,10 +96,6 @@ class AudioInput extends Writable {
         return this;
     }
 
-    public get availableAudioLength(): number {
-        return this.audioBuffer.length;
-    }
-
     public close(): void {
         this.inputClosed = true;
 
@@ -119,7 +115,9 @@ class AudioInput extends Writable {
     }
 
     public readAudioChunk(highWaterMark?: number): Buffer {
-        let chunk: Buffer = !highWaterMark ? this.audioBuffer : this.audioBuffer.subarray(0, highWaterMark);
+        if (this.audioBuffer.length === 0) return this.audioBuffer;
+
+        let chunk: Buffer = !highWaterMark ? Buffer.from(this.audioBuffer) : this.audioBuffer.subarray(0, highWaterMark);
 
         this.audioBuffer = !highWaterMark ? Buffer.alloc(0) : this.audioBuffer.subarray(highWaterMark, this.audioBuffer.length);
 
