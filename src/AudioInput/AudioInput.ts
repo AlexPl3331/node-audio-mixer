@@ -21,46 +21,45 @@ interface AudioInputArgs {
 
 
 class AudioInput extends Writable {
-    private sampleRate: AudioSampleRate;
-    private channels: number;
-    private volume: number;
-    private bitDepth: AudioBitDepth;
-    private endianness: AudioEndianness;
-    private forceClose: boolean;
+    private inputOptions: AudioInputArgs = {
+        sampleRate: 48000,
+        channels: 1,
+        volume: 100,
+        bitDepth: 16,
+        endianness: endianness(),
+        forceClose: false
+    }
 
-    private audioMixerArgs: AudioMixerArgs;
+    private audioMixerArgs: AudioMixerArgs = {
+        sampleRate: 48000,
+        channels: 1,
+        volume: 100,
+        bitDepth: 16,
+        endianness: endianness(),
+        highWaterMark: null,
+        delayTime: 1,
+        autoClose: false
+    };
+
+    private audioBuffer: Buffer = Buffer.alloc(0);
+    private inputClosed: boolean = false;
+
     private removeInterval: NodeJS.Timeout;
     private removeSelf: (audioInput: AudioInput) => void;
 
-    private audioBuffer: Buffer = Buffer.alloc(0);
 
-    private inputClosed: boolean = false;
-
-    constructor(args: AudioInputArgs, mixerArgs: AudioMixerArgs, removeFunction?: SelfRemoveFunction) {
+    constructor(inputArgs: AudioInputArgs, mixerArgs: AudioMixerArgs, removeFunction?: SelfRemoveFunction) {
         super();
 
-        const defaultAudioMixerArgs: AudioMixerArgs = {
-            sampleRate: 48000,
-            channels: 1,
-            bitDepth: 16,
-            endianness: endianness()
-        };
+        this.inputOptions = Object.assign(this.inputOptions, inputArgs);
+        this.audioMixerArgs = Object.assign(this.audioMixerArgs, mixerArgs);
 
-        this.sampleRate = args.sampleRate ?? 48000;
-        this.channels = args.channels ?? 1;
-        this.volume = args.volume ?? 100;
-        this.bitDepth = args.bitDepth ?? 16;
-        this.endianness = args.endianness ?? endianness();
-        this.forceClose = args.forceClose ?? false;
-
-        this.audioMixerArgs = mixerArgs || defaultAudioMixerArgs;
-
-        this.removeSelf = removeFunction || null;
+        this.removeSelf = removeFunction ?? null;
 
         this.once("close", () => {
             this.inputClosed = true;
 
-            if (this.audioBuffer.length > 0 && !this.forceClose) 
+            if (this.audioBuffer.length > 0 && !this.inputOptions.forceClose) 
             {
                 this.removeInterval = setInterval(this.autoRemoveFunc.bind(this), 1);
                 return;
@@ -76,22 +75,24 @@ class AudioInput extends Writable {
     public _write(chunk: Buffer, _: BufferEncoding, callback: (error?: Error) => void): void {
         if (this.inputClosed) return;
 
-        const inputParams: AudioInputArgs = {
-            sampleRate: this.sampleRate,
-            channels: this.channels,
-            bitDepth: this.bitDepth,
-            endianness: this.endianness
-        }
-
-        const processedChunk = changeSampleOptions(chunk, inputParams, this.audioMixerArgs);
+        const processedChunk = changeSampleOptions(chunk, this.inputOptions, this.audioMixerArgs);
 
         this.audioBuffer = Buffer.concat([this.audioBuffer, processedChunk]);
-
         callback();
     }
 
+    public get getOptions(): AudioInputArgs {
+        return { ...this.inputOptions };
+    }
+
     public setVolume(volume: number): this {
-        this.volume = volume;
+        this.inputOptions.volume = volume;
+
+        return this;
+    }
+
+    public setForceClose(forceClose: boolean): this {
+        this.inputOptions.forceClose = forceClose;
 
         return this;
     }
@@ -99,7 +100,7 @@ class AudioInput extends Writable {
     public close(): void {
         this.inputClosed = true;
 
-        if (this.audioBuffer.length > 0 && !this.forceClose) 
+        if (this.audioBuffer.length > 0 && !this.inputOptions.forceClose) 
         {
             this.end();
 
@@ -117,8 +118,7 @@ class AudioInput extends Writable {
     public readAudioChunk(highWaterMark?: number): Buffer {
         if (this.audioBuffer.length === 0) return this.audioBuffer;
 
-        let chunk: Buffer = !highWaterMark ? Buffer.from(this.audioBuffer) : this.audioBuffer.subarray(0, highWaterMark);
-
+        let chunk: Buffer = !highWaterMark ? Buffer.from(this.audioBuffer) : this.audioBuffer.subarray(0, highWaterMark); 1
         this.audioBuffer = !highWaterMark ? Buffer.alloc(0) : this.audioBuffer.subarray(highWaterMark, this.audioBuffer.length);
 
         if (this.audioBuffer.length < highWaterMark) 
@@ -132,7 +132,7 @@ class AudioInput extends Writable {
         }
 
         const changeVolumeArgs = {
-            volume: this.volume,
+            volume: this.inputOptions.volume,
             bitDepth: this.audioMixerArgs.bitDepth,
             endianness: this.audioMixerArgs.endianness
         }

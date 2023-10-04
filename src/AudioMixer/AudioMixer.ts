@@ -23,33 +23,27 @@ interface AudioMixerArgs {
 
 
 class AudioMixer extends Readable {
-    private sampleRate: AudioSampleRate;
-    private channels: number;
-    private volume: number;
-    private bitDepth: AudioBitDepth;
-    private endianness: AudioEndianness;
-    private highWaterMark: number | null;
-    private delayTime: delayTimeType;
-    private autoClose: boolean;
+    private mixerOptions: AudioMixerArgs = {
+        sampleRate: 48000,
+        channels: 1,
+        volume: 100,
+        bitDepth: 16,
+        endianness: endianness(),
+        highWaterMark: null,
+        delayTime: 1,
+        autoClose: false
+    };
 
     private inputs: Array<AudioInput> = [];
 
     private mixerClosed: boolean = false;
 
-    constructor(args?: AudioMixerArgs) {
+    constructor(mixerArgs?: AudioMixerArgs) {
         super();
 
-        this.sampleRate = args.sampleRate ?? 48000;
-        this.channels = args.channels ?? 1;
-        this.volume = args.volume ?? 100;
-        this.bitDepth = args.bitDepth ?? 16;
-        this.endianness = args.endianness ?? endianness();
-        this.highWaterMark = args.highWaterMark ?? null;
-        this.delayTime = args.delayTime ?? 1;
-        this.autoClose = args.autoClose ?? false;
+        this.mixerOptions = Object.assign(this.mixerOptions, mixerArgs);
 
         this.loopRead();
-
         this.once("close", this.close);
     }
 
@@ -57,45 +51,51 @@ class AudioMixer extends Readable {
     public _read(): void {
         if (this.inputs.length === 0) return;
 
-        const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(this.highWaterMark)).filter((chunk: Buffer) => chunk.length > 0);
+        const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(this.mixerOptions.highWaterMark)).filter((chunk: Buffer) => chunk.length > 0);
         if (chunks.length === 0) return;
 
-        const mixerArgs: AudioMixerArgs = {
-            sampleRate: this.sampleRate,
-            channels: this.channels,
-            volume: this.volume,
-            bitDepth: this.bitDepth,
-            endianness: this.endianness,
-            highWaterMark: this.highWaterMark
-        }
-
         const changeVolumeArgs = {
-            volume: this.volume,
-            bitDepth: this.bitDepth,
-            endianness: this.endianness
+            volume: this.mixerOptions.volume,
+            bitDepth: this.mixerOptions.bitDepth,
+            endianness: this.mixerOptions.endianness
         }
 
-        const mixedChunkSize = this.highWaterMark ?? Math.min(...chunks.map(chunk => chunk.length));
-        let mixedChunk: Buffer = mixAudioChunks(chunks, mixedChunkSize, mixerArgs);
+        const mixedChunkSize = this.mixerOptions.highWaterMark ?? Math.min(...chunks.map(chunk => chunk.length));
+        let mixedChunk: Buffer = mixAudioChunks(chunks, mixedChunkSize, this.mixerOptions);
 
         this.unshift(changeVolume(mixedChunk, changeVolumeArgs));
     }
 
+    public get getOptions(): AudioMixerArgs {
+        return { ...this.mixerOptions };
+    }
+
     public setVolume(volume: number): this {
-        this.volume = volume;
+        this.mixerOptions.volume = volume;
+
+        return this;
+    }
+
+    public setHighWaterMark(highWaterMark: number | null): this {
+        this.mixerOptions.highWaterMark = highWaterMark;
+
+        return this;
+    }
+
+    public setDelayTime(delayTime: delayTimeType): this {
+        this.mixerOptions.delayTime = delayTime;
+
+        return this;
+    }
+
+    public setAutoClose(autoClose: boolean): this {
+        this.mixerOptions.autoClose = autoClose;
 
         return this;
     }
 
     public createAudioInput(inputArgs: AudioInputArgs): AudioInput {
-        const mixerArgs: AudioMixerArgs = {
-            sampleRate: this.sampleRate,
-            channels: this.channels,
-            bitDepth: this.bitDepth,
-            endianness: this.endianness,
-        }
-
-        const audioInput = new AudioInput(inputArgs, mixerArgs, this.removeAudioInput.bind(this));
+        const audioInput = new AudioInput(inputArgs, this.mixerOptions, this.removeAudioInput.bind(this));
 
         this.inputs.push(audioInput);
 
@@ -114,7 +114,7 @@ class AudioMixer extends Readable {
             this.emit("removeInput");
         }
 
-        if (this.inputs.length === 0 && this.autoClose) return this.close();
+        if (this.inputs.length === 0 && this.mixerOptions.autoClose) return this.close();
 
         return this;
     }
@@ -137,7 +137,7 @@ class AudioMixer extends Readable {
 
         this._read();
 
-        const delayTime = typeof this.delayTime === "number" ? this.delayTime : this.delayTime();
+        const delayTime = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
 
         setTimeout(this.loopRead.bind(this), delayTime);
     }
