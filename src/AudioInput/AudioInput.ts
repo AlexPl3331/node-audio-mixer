@@ -120,13 +120,13 @@ class AudioInput extends Writable {
 
         if (typeof highWaterMark === "number")
         {
-            if (chunk.length < highWaterMark && this.inputOptions.fillChunk)
+            if (chunk.length < highWaterMark)
             {
+                if (!this.inputOptions.fillChunk) return Buffer.alloc(0);
+
                 const silentChunk = generateSilentChunk(this.mixerArgs.sampleRate, this.mixerArgs.channels, highWaterMark - chunk.length);
                 chunk = Buffer.concat([chunk, silentChunk]);
             }
-            else
-                return Buffer.alloc(0);
         }
 
         const changeVolumeArgs = {
