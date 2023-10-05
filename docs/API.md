@@ -4,14 +4,19 @@
   - [new AudioMixer(mixerArgs)](#new-audiomixermixerargs)
   - [Event: 'addInput'](#event-addinput)
   - [Event: 'removeInput'](#event-removeinput)
+  - [mixer.getOptions()](#mixergetoptions)
   - [mixer.setVolume(volume)](#mixersetvolumevolume)
+  - [mixer.setHighWaterMark(highWaterMark)](#mixersethighwatermarkhighwatermark)
+  - [mixer.setDelayTime(delayTime)](#mixersetdelaytimedelaytime)
+  - [mixer.setAutoClose(autoClose)](#mixersetautocloseautoclose)
   - [mixer.createAudioInput(inputArgs)](#mixercreateaudioinputinputargs)
   - [mixer.removeAudioInput(audioInput)](#mixerremoveaudioinputaudioinput)
   - [mixer.close()](#mixerclose)
 - [Class: AudioInput](#class-audioinput)
   - [new AudioInput(inputArgs, mixerArgs, removeFunction?)](#new-audioinputinputargs-mixerargs-removefunction)
+  - [input.getOptions()](#inputgetoptions)
   - [input.setVolume(volume)](#inputsetvolumevolume)
-  - [input.availableAudioLength](#inputavailableaudiolength)
+  - [input.setForceClose(forceClose)](#inputsetforcecloseforceclose)
   - [input.close()](#inputclose)
 
 ## Class: AudioMixer
@@ -34,6 +39,8 @@ This class represents an audio mixer. It extends the `Readable`.
   
   - `highWaterMark` {Number} Chunk size of the audio mixer's output. <br> Default: `null`.
   
+  - `generateSilent` {Boolean} Generate silent chunks when there are no audio inputs or when audio inputs are empty. <br> Default: `false`.
+  
   - `delayTime` {Number | Function} Audio mixing with a delay of n milliseconds. <br> Default: `1`.
   
   - `autoClose` {Boolean} The audio mixer automatically closes after all inputs are closed. <br> Default: `false`.
@@ -48,11 +55,33 @@ Emitted when you use `createAudioInput` in the audio mixer.
 
 Emitted when an audio input has been found and removed by the `removeAudioInput`. Better use, 
 
+### mixer.getOptions()
+
+Return a copy of the object [audioMixerArgs](#new-audiomixermixerargs).
+
 ### mixer.setVolume(volume)
 
 - `volume` {Number} New audio mixer volume.
 
 Sets the volume of the audio mixer.
+
+### mixer.setHighWaterMark(highWaterMark)
+
+- `highWaterMark` {Number | null} New value for `highWaterMark`.
+
+Set a new value for `highWaterMark`.
+
+### mixer.setAutoClose(autoClose)
+
+- `autoClose` {Boolean} New value for `autoClose`.
+
+Set a new value for `autoClose`.
+
+### mixer.setDelayTime(delayTime)
+
+- `delayTime` {Number} New value for `delayTime`.
+
+Set a new value for `delayTime`.
 
 ### mixer.createAudioInput(inputArgs)
 
@@ -67,6 +96,8 @@ Sets the volume of the audio mixer.
   - `bitDepth` {Number} Input bit depth in the audio input. <br> Default: `16`.
   
   - `endianness` {String} Input endianness in the audio input. <br> Default: `The endianness of your CPU`.
+  
+  - `fillChunk` {Boolean} Fill the chunk with zeroes when it's size is less than the `highWaterMark`. <br> Default: `false`.
   
   - `forceClose` {Boolean} Closes audio input even when it contains data <br> Default: `false`.
 
@@ -96,7 +127,11 @@ This class represents an audio input. It extends the `Writable`.
 
 Create a new AudioInput instance.
 
-> Note: if you want create a standalone input, ignore `removeFunction` argument.
+> Note: if you want create a standalone input, ignore `removeFunction` option.
+
+### input.getOptions()
+
+Return a copy of the object [AudioInputArgs](#new-audioinputinputargs-mixerargs-removefunction).
 
 ### input.setVolume(volume)
 
@@ -106,11 +141,11 @@ Sets the volume of the audio input.
 
 > Note: AudioInput modifies the audio volume before it is read by the audio mixer.
 
-### input.availableAudioLength
+### input.setForceClose(forceClose)
 
-- {Number}
+- `forceClose` {Boolean} New value for `forceClose`.
 
-The available audio length from the input.
+Set a new value for `forceClose`.
 
 ### input.close()
 
