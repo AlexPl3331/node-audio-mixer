@@ -6,6 +6,7 @@ import { AudioSampleRate, AudioBitDepth, AudioEndianness } from "../Types/AudioT
 
 import changeVolume from "../Utils/ChangeVolume"
 import changeSampleOptions from "../Utils/ChangeSampleOptions"
+import generateSilentChunk from "../Utils/GenerateSilentChunk"
 
 
 type SelfRemoveFunction = (audioInput: AudioInput) => void;
@@ -16,6 +17,7 @@ interface AudioInputArgs {
     volume?: number,
     bitDepth?: AudioBitDepth,
     endianness?: AudioEndianness,
+    fillChunk?: boolean,
     forceClose?: boolean
 }
 
@@ -27,10 +29,11 @@ class AudioInput extends Writable {
         volume: 100,
         bitDepth: 16,
         endianness: endianness(),
+        fillChunk: false,
         forceClose: false
     }
 
-    private audioMixerArgs: AudioMixerArgs = {
+    private mixerArgs: AudioMixerArgs = {
         sampleRate: 48000,
         channels: 1,
         volume: 100,
@@ -52,22 +55,20 @@ class AudioInput extends Writable {
         super();
 
         this.inputOptions = Object.assign(this.inputOptions, inputArgs);
-        this.audioMixerArgs = Object.assign(this.audioMixerArgs, mixerArgs);
+        this.mixerArgs = Object.assign(this.mixerArgs, mixerArgs);
 
         this.removeSelf = removeFunction ?? null;
 
         this.once("close", () => {
             this.inputClosed = true;
 
-            if (this.audioBuffer.length > 0 && !this.inputOptions.forceClose) 
+            if (this.audioBuffer.length === 0 || this.inputOptions.forceClose) 
             {
-                this.removeInterval = setInterval(this.autoRemoveFunc.bind(this), 1);
-                return;
+                this.audioBuffer = Buffer.alloc(0);
+                if (this.removeSelf) this.removeSelf(this);
             }
-
-            this.audioBuffer = Buffer.alloc(0);
-
-            if (this.removeSelf) this.removeSelf(this);
+            else
+                if (this.removeSelf) this.removeInterval = setInterval(this.autoRemoveFunc.bind(this), 1);
         });
     }
 
@@ -75,7 +76,7 @@ class AudioInput extends Writable {
     public _write(chunk: Buffer, _: BufferEncoding, callback: (error?: Error) => void): void {
         if (this.inputClosed) return;
 
-        const processedChunk = changeSampleOptions(chunk, this.inputOptions, this.audioMixerArgs);
+        const processedChunk = changeSampleOptions(chunk, this.inputOptions, this.mixerArgs);
 
         this.audioBuffer = Buffer.concat([this.audioBuffer, processedChunk]);
         callback();
@@ -100,41 +101,38 @@ class AudioInput extends Writable {
     public close(): void {
         this.inputClosed = true;
 
-        if (this.audioBuffer.length > 0 && !this.inputOptions.forceClose) 
+        if (this.audioBuffer.length === 0 || this.inputOptions.forceClose) 
         {
-            this.end();
-
-            this.removeInterval = setInterval(this.autoRemoveFunc.bind(this), 1);
-            return;
-        };
-
-        this.audioBuffer = Buffer.alloc(0);
-
-        if (this.removeSelf) this.removeSelf(this);
+            this.audioBuffer = Buffer.alloc(0);
+            if (this.removeSelf) this.removeSelf(this);
+        }
+        else
+            if (this.removeSelf) this.removeInterval = setInterval(this.autoRemoveFunc.bind(this), 1);
 
         this.end();
     }
 
-    public readAudioChunk(highWaterMark?: number): Buffer {
+    public readAudioChunk(highWaterMark: number | null): Buffer {
         if (this.audioBuffer.length === 0) return this.audioBuffer;
 
-        let chunk: Buffer = !highWaterMark ? Buffer.from(this.audioBuffer) : this.audioBuffer.subarray(0, highWaterMark); 1
+        let chunk: Buffer = this.audioBuffer.subarray(0, highWaterMark ?? this.audioBuffer.length);
         this.audioBuffer = !highWaterMark ? Buffer.alloc(0) : this.audioBuffer.subarray(highWaterMark, this.audioBuffer.length);
 
-        if (this.audioBuffer.length < highWaterMark) 
+        if (typeof highWaterMark === "number")
         {
-            const bytesPerSample = this.audioMixerArgs.bitDepth / 8;
-
-            const silentChunkLength = (highWaterMark - chunk.length) * bytesPerSample;
-            const silentChunk = Buffer.alloc(silentChunkLength);
-
-            chunk = Buffer.concat([chunk, silentChunk]);
+            if (chunk.length < highWaterMark && this.inputOptions.fillChunk)
+            {
+                const silentChunk = generateSilentChunk(this.mixerArgs.sampleRate, this.mixerArgs.channels, highWaterMark - chunk.length);
+                chunk = Buffer.concat([chunk, silentChunk]);
+            }
+            else
+                return Buffer.alloc(0);
         }
 
         const changeVolumeArgs = {
             volume: this.inputOptions.volume,
-            bitDepth: this.audioMixerArgs.bitDepth,
-            endianness: this.audioMixerArgs.endianness
+            bitDepth: this.mixerArgs.bitDepth,
+            endianness: this.mixerArgs.endianness
         }
 
         return changeVolume(chunk, changeVolumeArgs);

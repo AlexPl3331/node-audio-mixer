@@ -4,6 +4,7 @@ import { endianness } from "os"
 import { AudioInput, AudioInputArgs } from "../AudioInput/AudioInput"
 import { AudioSampleRate, AudioBitDepth, AudioEndianness } from "../Types/AudioTypes"
 
+import generateSilentChunk from "../Utils/GenerateSilentChunk"
 import mixAudioChunks from "../Utils/mixAudioChunks"
 import changeVolume from "../Utils/ChangeVolume"
 
@@ -17,6 +18,7 @@ interface AudioMixerArgs {
     bitDepth?: AudioBitDepth
     endianness?: AudioEndianness
     highWaterMark?: number | null
+    generateSilent?: boolean
     delayTime?: delayTimeType
     autoClose?: boolean
 }
@@ -30,6 +32,7 @@ class AudioMixer extends Readable {
         bitDepth: 16,
         endianness: endianness(),
         highWaterMark: null,
+        generateSilent: false,
         delayTime: 1,
         autoClose: false
     };
@@ -49,10 +52,18 @@ class AudioMixer extends Readable {
 
 
     public _read(): void {
-        if (this.inputs.length === 0) return;
-
         const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(this.mixerOptions.highWaterMark)).filter((chunk: Buffer) => chunk.length > 0);
-        if (chunks.length === 0) return;
+
+        if (chunks.length === 0)
+        {
+            if (this.mixerOptions.generateSilent)
+            {
+                const silentChunk: Buffer = generateSilentChunk(this.mixerOptions.sampleRate, this.mixerOptions.channels, this.mixerOptions.highWaterMark);
+                this.unshift(silentChunk);
+            }
+
+            return;
+        }
 
         const changeVolumeArgs = {
             volume: this.mixerOptions.volume,
