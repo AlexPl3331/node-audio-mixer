@@ -1,12 +1,12 @@
 import { AudioInputArgs } from "../AudioInput/AudioInput"
 import { AudioMixerArgs } from "../AudioMixer/AudioMixer"
 
-import changeBitDepth from "./AudioParams/ChangeBitDepth"
-import changeChannelCount from "./AudioParams/ChangeChannelCount"
-import changeSampleRate from "./AudioParams/ChangeSampleRate"
+import changeBitDepth from "./AudioOptions/ChangeBitDepth"
+import changeChannelCount from "./AudioOptions/ChangeChannelCount"
+import changeSampleRate from "./AudioOptions/ChangeSampleRate"
 
 
-const changeSampleParams = (inputChunk: Buffer, inputArgs: AudioInputArgs, mixerArgs: AudioMixerArgs): Buffer => {
+const changeSampleOptions = (inputChunk: Buffer, inputArgs: AudioInputArgs, mixerArgs: AudioMixerArgs): Buffer => {
     inputChunk = changeBitDepth(inputChunk,
         {
             bitDepth: inputArgs.bitDepth,
@@ -42,4 +42,4 @@ const changeSampleParams = (inputChunk: Buffer, inputArgs: AudioInputArgs, mixer
     return inputChunk;
 }
 
-export default changeSampleParams;
+export default changeSampleOptions;

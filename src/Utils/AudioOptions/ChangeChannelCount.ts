@@ -19,13 +19,13 @@ const changeChannelCount = (inputChunk: Buffer, inputArgs: CountChannelsParams, 
 
     for (let index = 0, nextSamples = 0; index < inputChunk.length; index += bytePerChannel)
     {
-        const getInputSample = inputChunk[`readInt${inputArgs.endianness}`](index, bytesPerSample);
+        const sample = inputChunk[`readInt${inputArgs.endianness}`](index, bytesPerSample);
 
         let nextSample = nextSamples + (bytesPerSample * outputArgs.channels);
 
         for (let currentByte = nextSamples; nextSamples < nextSample; currentByte += bytesPerSample)
         {
-            outputChunk[`writeInt${outputArgs.endianness}`](getInputSample, currentByte, bytesPerSample);
+            outputChunk[`writeInt${outputArgs.endianness}`](sample, currentByte, bytesPerSample);
 
             nextSamples += bytesPerSample;
         }
