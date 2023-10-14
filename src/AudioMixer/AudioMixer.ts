@@ -141,6 +141,7 @@ class AudioMixer extends Readable {
         this.unshift(null);
 
         this.mixerClosed = true;
+        this.emit("end");
 
         return this;
     }
