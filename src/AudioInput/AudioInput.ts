@@ -33,7 +33,7 @@ class AudioInput extends Writable {
         forceClose: false
     }
 
-    private mixerArgs: AudioMixerArgs = {
+    private mixerOptions: AudioMixerArgs = {
         sampleRate: 48000,
         channels: 1,
         bitDepth: 16,
@@ -55,7 +55,7 @@ class AudioInput extends Writable {
         super();
 
         this.inputOptions = Object.assign(this.inputOptions, inputArgs);
-        this.mixerArgs = Object.assign(this.mixerArgs, mixerArgs);
+        this.mixerOptions = Object.assign(this.mixerOptions, mixerArgs);
 
         this.removeSelf = removeFunction ?? null;
 
@@ -66,7 +66,7 @@ class AudioInput extends Writable {
     public _write(chunk: Buffer, _: BufferEncoding, callback: (error?: Error) => void): void {
         if (this.inputClosed) return;
 
-        const processedChunk = changeSampleOptions(chunk, this.inputOptions, this.mixerArgs);
+        const processedChunk = changeSampleOptions(chunk, this.inputOptions, this.mixerOptions);
 
         this.audioBuffer = Buffer.concat([this.audioBuffer, processedChunk]);
         callback();
@@ -114,15 +114,15 @@ class AudioInput extends Writable {
             {
                 if (!this.inputOptions.fillChunk) return Buffer.alloc(0);
 
-                const silentChunk = generateSilentChunk(this.mixerArgs.sampleRate, this.mixerArgs.channels, highWaterMark - chunk.length);
+                const silentChunk = generateSilentChunk(this.mixerOptions.sampleRate, this.mixerOptions.channels, highWaterMark - chunk.length);
                 chunk = Buffer.concat([chunk, silentChunk]);
             }
         }
 
         const changeVolumeArgs = {
             volume: this.inputOptions.volume,
-            bitDepth: this.mixerArgs.bitDepth,
-            endianness: this.mixerArgs.endianness
+            bitDepth: this.mixerOptions.bitDepth,
+            endianness: this.mixerOptions.endianness
         }
 
         return changeVolume(chunk, changeVolumeArgs);
