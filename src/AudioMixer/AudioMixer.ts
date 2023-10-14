@@ -14,9 +14,9 @@ type delayTimeType = number | (() => number);
 interface AudioMixerArgs {
     sampleRate?: AudioSampleRate
     channels?: number
-    volume?: number
     bitDepth?: AudioBitDepth
     endianness?: AudioEndianness
+    volume?: number
     highWaterMark?: number | null
     generateSilent?: boolean
     delayTime?: delayTimeType
@@ -28,9 +28,9 @@ class AudioMixer extends Readable {
     private mixerOptions: AudioMixerArgs = {
         sampleRate: 48000,
         channels: 1,
-        volume: 100,
         bitDepth: 16,
         endianness: endianness(),
+        volume: 100,
         highWaterMark: null,
         generateSilent: false,
         delayTime: 1,
@@ -52,6 +52,8 @@ class AudioMixer extends Readable {
 
 
     public _read(): void {
+        if (this.isPaused()) return;
+
         const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(this.mixerOptions.highWaterMark)).filter((chunk: Buffer) => chunk.length > 0);
 
         if (chunks.length === 0)
