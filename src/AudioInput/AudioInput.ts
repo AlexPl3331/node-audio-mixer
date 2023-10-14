@@ -114,7 +114,7 @@ class AudioInput extends Writable {
             {
                 if (!this.inputOptions.fillChunk) return Buffer.alloc(0);
 
-                const silentChunk = generateSilentChunk(this.mixerOptions.sampleRate, this.mixerOptions.channels, highWaterMark - chunk.length);
+                const silentChunk = generateSilentChunk(highWaterMark - chunk.length);
                 chunk = Buffer.concat([chunk, silentChunk]);
             }
         }

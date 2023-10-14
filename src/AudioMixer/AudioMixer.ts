@@ -18,7 +18,8 @@ interface AudioMixerArgs {
     endianness?: AudioEndianness
     volume?: number
     highWaterMark?: number | null
-    generateSilent?: boolean
+    generateSilent?: boolean,
+    silentDuration?: number,
     delayTime?: delayTimeType
     autoClose?: boolean
 }
@@ -33,6 +34,7 @@ class AudioMixer extends Readable {
         volume: 100,
         highWaterMark: null,
         generateSilent: false,
+        silentDuration: null,
         delayTime: 1,
         autoClose: false
     };
@@ -40,13 +42,16 @@ class AudioMixer extends Readable {
     private inputs: Array<AudioInput> = [];
 
     private mixerClosed: boolean = false;
+    private delayTimeValue: number;
 
     constructor(mixerArgs?: AudioMixerArgs) {
         super();
 
         this.mixerOptions = Object.assign(this.mixerOptions, mixerArgs);
 
-        this.loopRead();
+        this.delayTimeValue = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
+
+        setTimeout(this.loopRead.bind(this), this.delayTimeValue);
         this.once("close", this.close);
     }
 
@@ -60,7 +65,7 @@ class AudioMixer extends Readable {
         {
             if (this.mixerOptions.generateSilent)
             {
-                const silentChunk: Buffer = generateSilentChunk(this.mixerOptions.sampleRate, this.mixerOptions.channels, this.mixerOptions.highWaterMark);
+                const silentChunk: Buffer = generateSilentChunk(this.mixerOptions.highWaterMark ?? (this.mixerOptions.sampleRate * this.mixerOptions.channels / 1000) * Math.max(1, this.mixerOptions.silentDuration ?? this.delayTimeValue));
                 this.unshift(silentChunk);
             }
 
@@ -151,9 +156,9 @@ class AudioMixer extends Readable {
 
         this._read();
 
-        const delayTime = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
+        this.delayTimeValue = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
 
-        setTimeout(this.loopRead.bind(this), delayTime);
+        setTimeout(this.loopRead.bind(this), this.delayTimeValue);
     }
 }
 
