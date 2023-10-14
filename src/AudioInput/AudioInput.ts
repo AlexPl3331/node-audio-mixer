@@ -14,9 +14,9 @@ type SelfRemoveFunction = (audioInput: AudioInput) => void;
 interface AudioInputArgs {
     sampleRate?: AudioSampleRate,
     channels?: number,
-    volume?: number,
     bitDepth?: AudioBitDepth,
     endianness?: AudioEndianness,
+    volume?: number,
     fillChunk?: boolean,
     forceClose?: boolean
 }
@@ -26,9 +26,9 @@ class AudioInput extends Writable {
     private inputOptions: AudioInputArgs = {
         sampleRate: 48000,
         channels: 1,
-        volume: 100,
         bitDepth: 16,
         endianness: endianness(),
+        volume: 100,
         fillChunk: false,
         forceClose: false
     }
@@ -36,9 +36,9 @@ class AudioInput extends Writable {
     private mixerArgs: AudioMixerArgs = {
         sampleRate: 48000,
         channels: 1,
-        volume: 100,
         bitDepth: 16,
         endianness: endianness(),
+        volume: 100,
         highWaterMark: null,
         delayTime: 1,
         autoClose: false
@@ -59,17 +59,7 @@ class AudioInput extends Writable {
 
         this.removeSelf = removeFunction ?? null;
 
-        this.once("close", () => {
-            this.inputClosed = true;
-
-            if (this.audioBuffer.length === 0 || this.inputOptions.forceClose) 
-            {
-                this.audioBuffer = Buffer.alloc(0);
-                if (this.removeSelf) this.removeSelf(this);
-            }
-            else
-                if (this.removeSelf) this.removeInterval = setInterval(this.autoRemoveFunc.bind(this), 1);
-        });
+        this.once("close", this.close);
     }
 
 
@@ -113,7 +103,7 @@ class AudioInput extends Writable {
     }
 
     public readAudioChunk(highWaterMark: number | null): Buffer {
-        if (this.audioBuffer.length === 0) return this.audioBuffer;
+        if (this.writableCorked || this.audioBuffer.length === 0) return Buffer.alloc(0);
 
         let chunk: Buffer = this.audioBuffer.subarray(0, highWaterMark ?? this.audioBuffer.length);
         this.audioBuffer = !highWaterMark ? Buffer.alloc(0) : this.audioBuffer.subarray(highWaterMark, this.audioBuffer.length);
