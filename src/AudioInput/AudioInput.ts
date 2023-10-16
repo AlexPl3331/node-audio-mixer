@@ -8,7 +8,7 @@ import changeVolume from "../Utils/ChangeVolume"
 import changeSampleOptions from "../Utils/ChangeSampleOptions"
 import generateSilentChunk from "../Utils/GenerateSilentChunk"
 
-
+type preProcessDataType = (data: Buffer) => Buffer;
 type SelfRemoveFunction = (audioInput: AudioInput) => void;
 
 interface AudioInputArgs {
@@ -18,6 +18,7 @@ interface AudioInputArgs {
     endianness?: AudioEndianness,
     volume?: number,
     fillChunk?: boolean,
+    preProcessData?: preProcessDataType
     forceClose?: boolean
 }
 
@@ -30,6 +31,7 @@ class AudioInput extends Writable {
         endianness: endianness(),
         volume: 100,
         fillChunk: false,
+        preProcessData: (data: Buffer) => { return data; },
         forceClose: false
     }
 
@@ -41,6 +43,9 @@ class AudioInput extends Writable {
         volume: 100,
         highWaterMark: null,
         delayTime: 1,
+        generateSilent: false,
+        silentDuration: null,
+        preProcessData: (data: Buffer) => { return data; },
         autoClose: false
     };
 
@@ -66,7 +71,7 @@ class AudioInput extends Writable {
     public _write(chunk: Buffer, _: BufferEncoding, callback: (error?: Error) => void): void {
         if (this.inputClosed) return;
 
-        const processedChunk = changeSampleOptions(chunk, this.inputOptions, this.mixerOptions);
+        const processedChunk = changeSampleOptions(this.inputOptions.preProcessData(chunk), this.inputOptions, this.mixerOptions);
 
         this.audioBuffer = Buffer.concat([this.audioBuffer, processedChunk]);
         callback();
@@ -82,6 +87,12 @@ class AudioInput extends Writable {
         return this;
     }
 
+    public setPreProcessData(preProcessData: preProcessDataType) {
+        this.inputOptions.preProcessData = preProcessData;
+
+        return this;
+    }
+
     public setForceClose(forceClose: boolean): this {
         this.inputOptions.forceClose = forceClose;
 
@@ -89,6 +100,8 @@ class AudioInput extends Writable {
     }
 
     public close(): void {
+        if (this.inputClosed) return;
+
         this.inputClosed = true;
 
         if (this.audioBuffer.length === 0 || this.inputOptions.forceClose) 

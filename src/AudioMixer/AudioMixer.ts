@@ -10,6 +10,7 @@ import changeVolume from "../Utils/ChangeVolume"
 
 
 type delayTimeType = number | (() => number);
+type preProcessDataType = (data: Buffer) => Buffer;
 
 interface AudioMixerArgs {
     sampleRate?: AudioSampleRate
@@ -17,9 +18,10 @@ interface AudioMixerArgs {
     bitDepth?: AudioBitDepth
     endianness?: AudioEndianness
     volume?: number
-    highWaterMark?: number | null
-    generateSilent?: boolean,
-    silentDuration?: number,
+    highWaterMark?: number
+    generateSilent?: boolean
+    silentDuration?: number
+    preProcessData?: preProcessDataType
     delayTime?: delayTimeType
     autoClose?: boolean
 }
@@ -35,6 +37,7 @@ class AudioMixer extends Readable {
         highWaterMark: null,
         generateSilent: false,
         silentDuration: null,
+        preProcessData: (data: Buffer) => { return data; },
         delayTime: 1,
         autoClose: false
     };
@@ -52,6 +55,7 @@ class AudioMixer extends Readable {
         this.delayTimeValue = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
 
         setTimeout(this.loopRead.bind(this), this.delayTimeValue);
+
         this.once("close", this.close);
     }
 
@@ -81,7 +85,7 @@ class AudioMixer extends Readable {
         const mixedChunkSize = this.mixerOptions.highWaterMark ?? Math.min(...chunks.map(chunk => chunk.length));
         let mixedChunk: Buffer = mixAudioChunks(chunks, mixedChunkSize, this.mixerOptions);
 
-        this.unshift(changeVolume(mixedChunk, changeVolumeArgs));
+        this.unshift(this.mixerOptions.preProcessData(changeVolume(mixedChunk, changeVolumeArgs)));
     }
 
     public get getOptions(): AudioMixerArgs {
@@ -96,6 +100,12 @@ class AudioMixer extends Readable {
 
     public setHighWaterMark(highWaterMark: number | null): this {
         this.mixerOptions.highWaterMark = highWaterMark;
+
+        return this;
+    }
+
+    public setPreProcessData(preProcessData: preProcessDataType) {
+        this.mixerOptions.preProcessData = preProcessData;
 
         return this;
     }
