@@ -47,7 +47,7 @@ This class represents an audio mixer. It extends the `Readable`.
   
   - `silentDuration` {Number | Null} Duration of the silent audio chunk. <br> Default: `null`.  
   
-  - `preProcessData` {Function} Process the chunk before returning from AudioMixer. <br> Default: `Returns the same audio chunk`.
+  - `preProcessData` {Function} Process the chunk before returning it from AudioMixer. <br> Default: `Returns the same audio chunk`.
   
   - `delayTime` {Number | Function} Audio mixing with a delay of n milliseconds. <br> Default: `1`.
   
@@ -127,6 +127,8 @@ Set an updated value for `autoClose`.
   
   - `fillChunk` {Boolean} Fill the chunk with zeroes when it's size is less than the `highWaterMark`. <br> Default: `false`.
   
+  - `preProcessData` {Function} Process the chunk before returning it to AudioMixer. <br> Default: `Returns the same audio chunk`.
+
   - `forceClose` {Boolean} Closes audio input even when it contains data <br> Default: `false`.
 
 Create a new AudioInput instance and add it to the AudioMixer.
