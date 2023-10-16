@@ -7,6 +7,9 @@
   - [mixer.getOptions()](#mixergetoptions)
   - [mixer.setVolume(volume)](#mixersetvolumevolume)
   - [mixer.setHighWaterMark(highWaterMark)](#mixersethighwatermarkhighwatermark)
+  - [mixer.setgenerateSilent(generateSilent)](#mixersetgeneratesilentgeneratesilent)
+  - [mixer.setSilentDuration(silentDuration)](#mixersetsilentdurationsilentduration)
+  - [mixer.setPreProcessData(preProcessData)](#mixersetpreprocessdatapreprocessdata)
   - [mixer.setDelayTime(delayTime)](#mixersetdelaytimedelaytime)
   - [mixer.setAutoClose(autoClose)](#mixersetautocloseautoclose)
   - [mixer.createAudioInput(inputArgs)](#mixercreateaudioinputinputargs)
@@ -16,6 +19,7 @@
   - [new AudioInput(inputArgs, mixerArgs, removeFunction?)](#new-audioinputinputargs-mixerargs-removefunction)
   - [input.getOptions()](#inputgetoptions)
   - [input.setVolume(volume)](#inputsetvolumevolume)
+  - [input.setPreProcessData(preProcessData)](#mixersetpreprocessdatapreprocessdata-1)
   - [input.setForceClose(forceClose)](#inputsetforcecloseforceclose)
   - [input.close()](#inputclose)
 
@@ -37,9 +41,13 @@ This class represents an audio mixer. It extends the `Readable`.
   
   - `endianness` {String} Output endianness from the audio mixer. <br> Default: `The endianness of your CPU`.
   
-  - `highWaterMark` {Number} Chunk size of the audio mixer's output. <br> Default: `null`.
+  - `highWaterMark` {Number | Null} Chunk size of the audio mixer's output. <br> Default: `null`.
   
   - `generateSilent` {Boolean} Generate silent chunks when there are no audio inputs or when audio inputs are empty. <br> Default: `false`.
+  
+  - `silentDuration` {Number | Null} Duration of the silent audio chunk. <br> Default: `null`.  
+  
+  - `preProcessData` {Function} Process the chunk before returning from AudioMixer. <br> Default: `Returns the same audio chunk`.
   
   - `delayTime` {Number | Function} Audio mixing with a delay of n milliseconds. <br> Default: `1`.
   
@@ -53,7 +61,8 @@ Emitted when you use `createAudioInput` in the audio mixer.
 
 ### Event 'removeInput'
 
-Emitted when an audio input has been found and removed by the `removeAudioInput`. Better use, 
+Emitted when an audio input has been found and removed by the `removeAudioInput`.
+> Note: Better use this event when `forceClose` is set to `false` in AudioInput, instead of using `close` or `end`.
 
 ### mixer.getOptions()
 
@@ -67,21 +76,40 @@ Sets the volume of the audio mixer.
 
 ### mixer.setHighWaterMark(highWaterMark)
 
-- `highWaterMark` {Number | null} New value for `highWaterMark`.
+- `highWaterMark` {Number | null} Updated value for `highWaterMark`.
 
-Set a new value for `highWaterMark`.
+Set an updated value for `highWaterMark`.
 
-### mixer.setAutoClose(autoClose)
+### mixer.setgenerateSilent(generateSilent)
 
-- `autoClose` {Boolean} New value for `autoClose`.
+- `generateSilent` {Boolean} Updated value for `generateSilent`.
 
-Set a new value for `autoClose`.
+Set an updated value for `generateSilent`.
+
+### mixer.setSilentDuration(silentDuration)
+
+- `silentDuration` {Number | Null} Updated value for `silentDuration`.
+
+Set an updated value for `silentDuration`.
+> Note: If you set the value to `null`, the `silentDuration` will be replaced by the `delayTime`.
+
+### mixer.setPreProcessData(preProcessData)
+
+- `preProcessData` {Function} Updated value for `preProcessData`.
+
+Set an updated value for `preProcessData`.
 
 ### mixer.setDelayTime(delayTime)
 
-- `delayTime` {Number} New value for `delayTime`.
+- `delayTime` {Number} Updated value for `delayTime`.
 
-Set a new value for `delayTime`.
+Set an updated value for `delayTime`.
+
+### mixer.setAutoClose(autoClose)
+
+- `autoClose` {Boolean} Updated value for `autoClose`.
+
+Set an updated value for `autoClose`.
 
 ### mixer.createAudioInput(inputArgs)
 
@@ -138,8 +166,13 @@ Return a copy of the object [AudioInputArgs](#new-audioinputinputargs-mixerargs-
 - `volume` {Number} New audio input volume.
 
 Sets the volume of the audio input.
-
 > Note: AudioInput modifies the audio volume before it is read by the audio mixer.
+
+### mixer.setPreProcessData(preProcessData)
+
+- `preProcessData` {Function} Updated value for `preProcessData`.
+
+Set an updated value for `preProcessData`.
 
 ### input.setForceClose(forceClose)
 
