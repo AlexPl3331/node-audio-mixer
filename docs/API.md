@@ -19,7 +19,7 @@
   - [new AudioInput(inputArgs, mixerArgs, removeFunction?)](#new-audioinputinputargs-mixerargs-removefunction)
   - [input.getOptions()](#inputgetoptions)
   - [input.setVolume(volume)](#inputsetvolumevolume)
-  - [input.setPreProcessData(preProcessData)](#mixersetpreprocessdatapreprocessdata-1)
+  - [input.setPreProcessData(preProcessData)](#inputsetpreprocessdatapreprocessdata)
   - [input.setForceClose(forceClose)](#inputsetforcecloseforceclose)
   - [input.close()](#inputclose)
 
@@ -168,7 +168,7 @@ Return a copy of the object [AudioInputArgs](#new-audioinputinputargs-mixerargs-
 Sets the volume of the audio input.
 > Note: AudioInput modifies the audio volume before it is read by the audio mixer.
 
-### mixer.setPreProcessData(preProcessData)
+### input.setPreProcessData(preProcessData)
 
 - `preProcessData` {Function} Updated value for `preProcessData`.
 
