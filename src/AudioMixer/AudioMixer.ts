@@ -10,15 +10,18 @@ import changeVolume from "../Utils/ChangeVolume"
 
 
 type delayTimeType = number | (() => number);
+type preProcessDataType = (data: Buffer) => Buffer;
 
 interface AudioMixerArgs {
     sampleRate?: AudioSampleRate
     channels?: number
-    volume?: number
     bitDepth?: AudioBitDepth
     endianness?: AudioEndianness
-    highWaterMark?: number | null
+    volume?: number
+    highWaterMark?: number | null;
     generateSilent?: boolean
+    silentDuration?: number | null
+    preProcessData?: preProcessDataType
     delayTime?: delayTimeType
     autoClose?: boolean
 }
@@ -28,11 +31,13 @@ class AudioMixer extends Readable {
     private mixerOptions: AudioMixerArgs = {
         sampleRate: 48000,
         channels: 1,
-        volume: 100,
         bitDepth: 16,
         endianness: endianness(),
+        volume: 100,
         highWaterMark: null,
         generateSilent: false,
+        silentDuration: null,
+        preProcessData: (data: Buffer) => { return data; },
         delayTime: 1,
         autoClose: false
     };
@@ -40,25 +45,31 @@ class AudioMixer extends Readable {
     private inputs: Array<AudioInput> = [];
 
     private mixerClosed: boolean = false;
+    private delayTimeValue: number;
 
     constructor(mixerArgs?: AudioMixerArgs) {
         super();
 
         this.mixerOptions = Object.assign(this.mixerOptions, mixerArgs);
 
-        this.loopRead();
+        this.delayTimeValue = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
+
+        setTimeout(this.loopRead.bind(this), this.delayTimeValue);
+
         this.once("close", this.close);
     }
 
 
     public _read(): void {
+        if (this.isPaused()) return;
+
         const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(this.mixerOptions.highWaterMark)).filter((chunk: Buffer) => chunk.length > 0);
 
         if (chunks.length === 0)
         {
             if (this.mixerOptions.generateSilent)
             {
-                const silentChunk: Buffer = generateSilentChunk(this.mixerOptions.sampleRate, this.mixerOptions.channels, this.mixerOptions.highWaterMark);
+                const silentChunk: Buffer = generateSilentChunk(this.mixerOptions.highWaterMark ?? (this.mixerOptions.sampleRate * this.mixerOptions.channels / 1000) * Math.max(1, this.mixerOptions.silentDuration ?? this.delayTimeValue));
                 this.unshift(silentChunk);
             }
 
@@ -74,7 +85,7 @@ class AudioMixer extends Readable {
         const mixedChunkSize = this.mixerOptions.highWaterMark ?? Math.min(...chunks.map(chunk => chunk.length));
         let mixedChunk: Buffer = mixAudioChunks(chunks, mixedChunkSize, this.mixerOptions);
 
-        this.unshift(changeVolume(mixedChunk, changeVolumeArgs));
+        this.unshift(this.mixerOptions.preProcessData(changeVolume(mixedChunk, changeVolumeArgs)));
     }
 
     public get getOptions(): AudioMixerArgs {
@@ -89,6 +100,24 @@ class AudioMixer extends Readable {
 
     public setHighWaterMark(highWaterMark: number | null): this {
         this.mixerOptions.highWaterMark = highWaterMark;
+
+        return this;
+    }
+
+    public setgenerateSilent(generateSilent: boolean) {
+        this.mixerOptions.generateSilent = generateSilent;
+
+        return this;
+    }
+
+    public setSilentDuration(silentDuration: number | null) {
+        this.mixerOptions.silentDuration = silentDuration;
+
+        return this;
+    }
+
+    public setPreProcessData(preProcessData: preProcessDataType) {
+        this.mixerOptions.preProcessData = preProcessData;
 
         return this;
     }
@@ -139,6 +168,7 @@ class AudioMixer extends Readable {
         this.unshift(null);
 
         this.mixerClosed = true;
+        this.emit("end");
 
         return this;
     }
@@ -148,9 +178,9 @@ class AudioMixer extends Readable {
 
         this._read();
 
-        const delayTime = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
+        this.delayTimeValue = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
 
-        setTimeout(this.loopRead.bind(this), delayTime);
+        setTimeout(this.loopRead.bind(this), this.delayTimeValue);
     }
 }
 
