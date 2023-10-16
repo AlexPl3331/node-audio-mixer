@@ -80,7 +80,7 @@ Sets the volume of the audio mixer.
 
 Set an updated value for `highWaterMark`.
 
-### mixer.setgenerateSilent(generateSilent)
+### mixer.setGenerateSilent(generateSilent)
 
 - `generateSilent` {Boolean} Updated value for `generateSilent`.
 
