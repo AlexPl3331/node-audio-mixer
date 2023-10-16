@@ -7,7 +7,7 @@
   - [mixer.getOptions()](#mixergetoptions)
   - [mixer.setVolume(volume)](#mixersetvolumevolume)
   - [mixer.setHighWaterMark(highWaterMark)](#mixersethighwatermarkhighwatermark)
-  - [mixer.setgenerateSilent(generateSilent)](#mixersetgeneratesilentgeneratesilent)
+  - [mixer.setGenerateSilent(generateSilent)](#mixersetgeneratesilentgeneratesilent)
   - [mixer.setSilentDuration(silentDuration)](#mixersetsilentdurationsilentduration)
   - [mixer.setPreProcessData(preProcessData)](#mixersetpreprocessdatapreprocessdata)
   - [mixer.setDelayTime(delayTime)](#mixersetdelaytimedelaytime)
@@ -80,7 +80,7 @@ Sets the volume of the audio mixer.
 
 Set an updated value for `highWaterMark`.
 
-### mixer.setgenerateSilent(generateSilent)
+### mixer.setGenerateSilent(generateSilent)
 
 - `generateSilent` {Boolean} Updated value for `generateSilent`.
 
