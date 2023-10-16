@@ -18,9 +18,9 @@ interface AudioMixerArgs {
     bitDepth?: AudioBitDepth
     endianness?: AudioEndianness
     volume?: number
-    highWaterMark?: number
+    highWaterMark?: number | null;
     generateSilent?: boolean
-    silentDuration?: number
+    silentDuration?: number | null
     preProcessData?: preProcessDataType
     delayTime?: delayTimeType
     autoClose?: boolean
@@ -100,6 +100,18 @@ class AudioMixer extends Readable {
 
     public setHighWaterMark(highWaterMark: number | null): this {
         this.mixerOptions.highWaterMark = highWaterMark;
+
+        return this;
+    }
+
+    public setgenerateSilent(generateSilent: boolean) {
+        this.mixerOptions.generateSilent = generateSilent;
+
+        return this;
+    }
+
+    public setSilentDuration(silentDuration: number | null) {
+        this.mixerOptions.silentDuration = silentDuration;
 
         return this;
     }
