@@ -8,16 +8,17 @@ import changeVolume from "../Utils/ChangeVolume"
 import changeSampleOptions from "../Utils/ChangeSampleOptions"
 import generateSilentChunk from "../Utils/GenerateSilentChunk"
 
+
 type preProcessDataType = (data: Buffer) => Buffer;
 type SelfRemoveFunction = (audioInput: AudioInput) => void;
 
 interface AudioInputArgs {
-    sampleRate?: AudioSampleRate,
-    channels?: number,
-    bitDepth?: AudioBitDepth,
-    endianness?: AudioEndianness,
-    volume?: number,
-    fillChunk?: boolean,
+    sampleRate?: AudioSampleRate
+    channels?: number
+    bitDepth?: AudioBitDepth
+    endianness?: AudioEndianness
+    volume?: number
+    fillChunk?: boolean
     preProcessData?: preProcessDataType
     forceClose?: boolean
 }
@@ -50,7 +51,7 @@ class AudioInput extends Writable {
     };
 
     private audioBuffer: Buffer = Buffer.alloc(0);
-    private inputClosed: boolean = false;
+    private isInputClosed: boolean = false;
 
     private removeInterval: NodeJS.Timeout;
     private removeSelf: (audioInput: AudioInput) => void;
@@ -69,7 +70,7 @@ class AudioInput extends Writable {
 
 
     public _write(chunk: Buffer, _: BufferEncoding, callback: (error?: Error) => void): void {
-        if (this.inputClosed) return;
+        if (this.isInputClosed) return;
 
         const processedChunk = changeSampleOptions(this.inputOptions.preProcessData(chunk), this.inputOptions, this.mixerOptions);
 
@@ -100,9 +101,9 @@ class AudioInput extends Writable {
     }
 
     public close(): void {
-        if (this.inputClosed) return;
+        if (this.isInputClosed) return;
 
-        this.inputClosed = true;
+        this.isInputClosed = true;
 
         if (this.audioBuffer.length === 0 || this.inputOptions.forceClose) 
         {
@@ -115,11 +116,9 @@ class AudioInput extends Writable {
         this.end();
     }
 
-    public readAudioChunk(highWaterMark: number | null): Buffer {
-        if (this.writableCorked || this.audioBuffer.length === 0) return Buffer.alloc(0);
-
-        let chunk: Buffer = this.audioBuffer.subarray(0, highWaterMark ?? this.audioBuffer.length);
-        this.audioBuffer = !highWaterMark ? Buffer.alloc(0) : this.audioBuffer.subarray(highWaterMark, this.audioBuffer.length);
+    public readAudioChunk(highWaterMark: number): Buffer {
+        let chunk: Buffer = this.audioBuffer.subarray(0, highWaterMark);
+        this.audioBuffer = this.audioBuffer.subarray(highWaterMark, this.audioBuffer.length);
 
         if (typeof highWaterMark === "number")
         {
@@ -139,6 +138,10 @@ class AudioInput extends Writable {
         }
 
         return changeVolume(chunk, changeVolumeArgs);
+    }
+
+    public get availableAudioLength() {
+        return this.audioBuffer.length;
     }
 
     private autoRemoveFunc(): void {
