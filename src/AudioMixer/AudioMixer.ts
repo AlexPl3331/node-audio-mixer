@@ -44,8 +44,9 @@ class AudioMixer extends Readable {
 
     private inputs: Array<AudioInput> = [];
 
-    private mixerClosed: boolean = false;
+    private isMixerClosed: boolean = false;
     private delayTimeValue: number;
+
 
     constructor(mixerArgs?: AudioMixerArgs) {
         super();
@@ -61,19 +62,15 @@ class AudioMixer extends Readable {
 
 
     public _read(): void {
-        if (this.isPaused()) return;
-
-        const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(this.mixerOptions.highWaterMark)).filter((chunk: Buffer) => chunk.length > 0);
+        const chunkLength = Math.min(...this.inputs.map((input: AudioInput) => input.availableAudioLength).filter(length => length > 0));
+        const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(chunkLength)).filter((chunk: Buffer) => chunk.length > 0);
 
         if (chunks.length === 0)
         {
-            if (this.mixerOptions.generateSilent)
-            {
-                const silentChunk: Buffer = generateSilentChunk(this.mixerOptions.highWaterMark ?? (this.mixerOptions.sampleRate * this.mixerOptions.channels / 1000) * Math.max(1, this.mixerOptions.silentDuration ?? this.delayTimeValue));
-                this.unshift(silentChunk);
-            }
+            if (!this.mixerOptions.generateSilent) return;
 
-            return;
+            const silentChunk: Buffer = generateSilentChunk(this.mixerOptions.highWaterMark ?? (this.mixerOptions.sampleRate * this.mixerOptions.channels / 1000) * Math.max(1, this.mixerOptions.silentDuration ?? this.delayTimeValue));
+            return this.unshift(silentChunk);
         }
 
         const changeVolumeArgs = {
@@ -160,23 +157,24 @@ class AudioMixer extends Readable {
     }
 
     public close(): this {
-        if (this.mixerClosed && this.inputs.length === 0) return this;
+        if (this.isMixerClosed && this.inputs.length === 0) return this;
+
+        this.isMixerClosed = true;
 
         this.inputs.forEach(input => input.close());
 
         this.destroy();
         this.unshift(null);
 
-        this.mixerClosed = true;
         this.emit("end");
 
         return this;
     }
 
     private loopRead(): void {
-        if (this.mixerClosed) return;
+        if (this.isMixerClosed) return;
 
-        this._read();
+        if (!this.isPaused()) this._read();
 
         this.delayTimeValue = typeof this.mixerOptions.delayTime === "number" ? this.mixerOptions.delayTime : this.mixerOptions.delayTime();
 
