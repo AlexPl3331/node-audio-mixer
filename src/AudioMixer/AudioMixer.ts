@@ -18,7 +18,7 @@ interface AudioMixerArgs {
     bitDepth?: AudioBitDepth
     endianness?: AudioEndianness
     volume?: number
-    highWaterMark?: number | null;
+    highWaterMark?: number | null
     generateSilent?: boolean
     silentDuration?: number | null
     preProcessData?: preProcessDataType
@@ -63,7 +63,7 @@ class AudioMixer extends Readable {
 
     public _read(): void {
         const chunkLength = Math.min(...this.inputs.map((input: AudioInput) => input.availableAudioLength).filter(length => length > 0));
-        const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(chunkLength)).filter((chunk: Buffer) => chunk.length > 0);
+        const chunks: Array<Buffer> = this.inputs.map((input: AudioInput) => input.readAudioChunk(this.mixerOptions.highWaterMark ?? chunkLength)).filter((chunk: Buffer) => chunk.length > 0);
 
         if (chunks.length === 0)
         {
