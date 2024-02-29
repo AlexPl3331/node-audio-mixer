@@ -3,7 +3,7 @@
         "target": "es2022",
         "module": "CommonJS",
         "lib": [
-            "es2023"
+            "es2022"
         ],
         "moduleResolution": "Node",
         "outDir": "./dist",
@@ -16,10 +16,8 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "sourceMap": false,
-        "noImplicitAny": false,
-        "noImplicitThis": false,
-        "strictNullChecks": false
+        "strict": true,
+        "strictNullChecks": true
     },
     "include": [
         "src/**/*",
