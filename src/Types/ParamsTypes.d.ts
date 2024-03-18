@@ -1,12 +1,13 @@
-import {type AudioSampleRate, type AudioBitDepth} from './AudioTypes';
+import {type SampleRate, type BitDepth, type Endianness} from './AudioTypes';
 
 export type DelayTimeType = number | (() => number);
 export type PreProcessDataType = (data: Int8Array) => Int8Array;
 
 type BasedParams = {
-	sampleRate: AudioSampleRate;
+	sampleRate: SampleRate;
 	channels: number;
-	bitDepth: AudioBitDepth;
+	bitDepth: BitDepth;
+	endianness?: Endianness;
 	volume?: number;
 	preProcessData?: PreProcessDataType;
 };
