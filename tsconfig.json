@@ -23,7 +23,7 @@
     },
     "include": [
         "src/**/*",
-        "test/**/*",
+        "tests/**/*",
         "examples/**/*",
         "jest.config.ts"
     ],

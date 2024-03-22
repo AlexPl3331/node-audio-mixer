@@ -8,7 +8,7 @@ const config: Config = {
 	coverageProvider: 'v8',
 
 	roots: [
-		'./tests/**',
+		'./tests/',
 	],
 
 	transform: {
