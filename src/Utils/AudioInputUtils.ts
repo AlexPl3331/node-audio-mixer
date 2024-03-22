@@ -1,5 +1,7 @@
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
 
+import {changeBitDepth} from './AudioUtils/ChangeBitDepth';
+
 import {type AudioUtils} from '../Types/AudioUtils';
 import {type AudioInputParams, type AudioMixerParams} from '../Types/ParamsTypes';
 
@@ -19,6 +21,14 @@ export class AudioInputUtils implements AudioUtils {
 
 	public setAudioData(audioData: Int8Array): this {
 		this.audioData = new ModifiedDataView(audioData.buffer);
+		return this;
+	}
+
+	public checkBitDepth(): this {
+		if (this.audioInputParams.bitDepth !== this.audioMixerParams.bitDepth) {
+			this.audioData = changeBitDepth(this.audioData, this.audioInputParams, this.audioMixerParams);
+		}
+
 		return this;
 	}
 
