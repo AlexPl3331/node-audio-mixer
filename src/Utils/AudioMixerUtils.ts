@@ -19,8 +19,7 @@ export class AudioMixerUtils implements AudioUtils {
 		return this;
 	}
 
-	public getAudioData(): this {
-		this.audioData.length = 0;
-		return this;
+	public getAudioData(): Int8Array {
+		return new Int8Array(0);
 	}
 }

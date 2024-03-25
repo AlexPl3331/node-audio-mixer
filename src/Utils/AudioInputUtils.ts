@@ -36,7 +36,7 @@ export class AudioInputUtils implements AudioUtils {
 		return this;
 	}
 
-	public getAudioData(): ModifiedDataView {
-		return this.audioData;
+	public getAudioData(): Int8Array {
+		return new Int8Array(this.audioData.buffer);
 	}
 }
