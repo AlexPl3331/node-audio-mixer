@@ -1,5 +1,4 @@
 import {type AudioMixerParams, type AudioInputParams} from '../src/Types/ParamsTypes';
-import {type ModifiedDataView} from '../src/ModifiedDataView/ModifiedDataView';
 
 import {readFileSync} from 'fs';
 import {AudioInputUtils} from '../src/Utils/AudioInputUtils';
@@ -24,7 +23,7 @@ describe('Test AudioUtils of AudioInput', () => {
 	const filePath = './sounds/tests/bitDepth';
 	const load16Bit = readFileSync(`${filePath}/16bit.pcm`);
 
-	function changeDepth(): ModifiedDataView {
+	function changeDepth(): Int8Array {
 		const copyBuffer = Int8Array.from(load16Bit);
 
 		return audioUtils.setAudioData(copyBuffer)
