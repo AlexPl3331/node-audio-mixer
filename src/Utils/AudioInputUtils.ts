@@ -1,6 +1,7 @@
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
 
 import {changeBitDepth} from './AudioUtils/ChangeBitDepth';
+import {changeSampleRate} from './AudioUtils/СhangeSampleRate';
 
 import {type AudioUtils} from '../Types/AudioUtils';
 import {type AudioInputParams, type AudioMixerParams} from '../Types/ParamsTypes';
@@ -35,6 +36,17 @@ export class AudioInputUtils implements AudioUtils {
 			this.audioData = changeBitDepth(this.audioData, this.changedParams, this.audioMixerParams);
 
 			this.changedParams.bitDepth = this.audioMixerParams.bitDepth;
+			this.changedParams.endianness = this.audioMixerParams.endianness;
+		}
+
+		return this;
+	}
+
+	public checkSampleRate(): this {
+		if (this.changedParams.sampleRate !== this.audioMixerParams.sampleRate) {
+			this.audioData = changeSampleRate(this.audioData, this.changedParams, this.audioMixerParams);
+
+			this.changedParams.sampleRate = this.audioMixerParams.sampleRate;
 			this.changedParams.endianness = this.audioMixerParams.endianness;
 		}
 
