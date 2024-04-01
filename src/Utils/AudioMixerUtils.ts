@@ -1,6 +1,9 @@
 import {type AudioUtils} from '../Types/AudioUtils';
 import {type AudioMixerParams} from '../Types/ParamsTypes';
 
+import {assertVolume} from '../Asserts/AssertVolume';
+import {changeVolume} from './AudioUtils/СhangeVolume';
+
 export class AudioMixerUtils implements AudioUtils {
 	private readonly audioMixerParams: AudioMixerParams;
 
@@ -15,7 +18,13 @@ export class AudioMixerUtils implements AudioUtils {
 		return this;
 	}
 
-	public changeVolume(): this {
+	public checkVolume(): this {
+		if (this.audioMixerParams.volume && this.audioMixerParams.volume !== 100) {
+			assertVolume(this.audioMixerParams.volume);
+
+			// ChangeVolume(this.audioData, this.audioMixerParams);
+		}
+
 		return this;
 	}
 
