@@ -4,7 +4,7 @@ import {type BitDepth} from '../../Types/AudioTypes';
 import {endianness} from 'os';
 
 import {ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
-import {getMethodName} from '../GetMethodName';
+import {getMethodName} from '../General/GetMethodName';
 
 export function changeSampleRate(audioData: ModifiedDataView, inputParams: AudioInputParams, mixerParams: AudioMixerParams): ModifiedDataView {
 	const bytesPerElement = inputParams.bitDepth / 8;

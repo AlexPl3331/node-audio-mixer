@@ -4,7 +4,7 @@ import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamsTy
 
 import {endianness} from 'os';
 
-import {getMethodName} from '../GetMethodName';
+import {getMethodName} from '../General/GetMethodName';
 
 export function changeVolume(audioData: ModifiedDataView, params: AudioInputParams | AudioMixerParams): void {
 	const bytesPerElement = params.bitDepth / 8;

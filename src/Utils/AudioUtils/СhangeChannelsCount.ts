@@ -5,7 +5,7 @@ import {type BitDepth} from '../../Types/AudioTypes';
 import {endianness} from 'os';
 
 import {ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
-import {getMethodName} from '../GetMethodName';
+import {getMethodName} from '../General/GetMethodName';
 
 export function changeChannelsCount(audioData: ModifiedDataView, inputParams: AudioInputParams, mixerParams: AudioMixerParams): ModifiedDataView {
 	const bytesPerElement = mixerParams.bitDepth / 8;
