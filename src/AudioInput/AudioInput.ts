@@ -58,7 +58,7 @@ export class AudioInput extends Writable {
 		if (!this.writableEnded) {
 			this.emit('close');
 
-			if (this.audioData.length === 0 || this.audioInputParams.closeForce) {
+			if (this.audioData.length === 0 || this.audioInputParams.forceClose) {
 				this.removeInputSelf();
 			}
 		}

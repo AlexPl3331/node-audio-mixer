@@ -7,8 +7,9 @@ type BasedParams = {
 	sampleRate: SampleRate;
 	channels: number;
 	bitDepth: BitDepth;
-	endianness?: Endianness;
 	volume?: number;
+	endianness?: Endianness;
+	forceClose?: boolean;
 	preProcessData?: PreProcessDataType;
 };
 
@@ -17,12 +18,10 @@ export type AudioMixerParams = {
 	generateSilent?: boolean;
 	silentDuration?: number;
 	delayTime?: DelayTimeType;
-	closeOnEnd?: boolean;
 } & BasedParams;
 
 export type AudioInputParams = {
 	fillChunk?: boolean;
-	closeForce?: boolean;
 } & BasedParams;
 
 export type OmitAudioParams<T> = Omit<T, 'sampleRate' | 'channels' | 'bitDepth'>;
