@@ -1,3 +1,4 @@
+
 import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamsTypes';
 import {type BitDepth} from '../../Types/AudioTypes';
 
@@ -24,9 +25,9 @@ export function changeBitDepth(audioData: ModifiedDataView, inputParams: AudioIn
 
 	for (let index = 0; index < audioData.byteLength; index += oldBytesPerElement) {
 		const audioSample = audioData[getSampleMethod](index, inputEndianness === 'LE');
-		const scaledSample = Math.round(audioSample * scalingFactor);
+		const scaledSample = Math.floor(audioSample * scalingFactor);
 
-		const newSamplePosition = Math.round(index * (newBytesPerElement / oldBytesPerElement));
+		const newSamplePosition = Math.floor(index * (newBytesPerElement / oldBytesPerElement));
 
 		allocDataView[setSampleMethod](newSamplePosition, scaledSample, mixerEndianness === 'LE');
 	}
