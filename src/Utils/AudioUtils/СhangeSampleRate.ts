@@ -1,16 +1,15 @@
 import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamsTypes';
 import {type BitDepth} from '../../Types/AudioTypes';
 
-import {endianness} from 'os';
-
 import {ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
+import {isLittleEndian} from '../General/IsLittleEndian';
 import {getMethodName} from '../General/GetMethodName';
 
 export function changeSampleRate(audioData: ModifiedDataView, inputParams: AudioInputParams, mixerParams: AudioMixerParams): ModifiedDataView {
 	const bytesPerElement = inputParams.bitDepth / 8;
 
-	const inputEndianness = inputParams.endianness ?? endianness();
-	const mixerEndianness = mixerParams.endianness ?? endianness();
+	const isInputLe = isLittleEndian(inputParams.endianness);
+	const isMixerLe = isLittleEndian(mixerParams.endianness);
 
 	const isDownsample = inputParams.sampleRate > mixerParams.sampleRate;
 
@@ -32,12 +31,12 @@ export function changeSampleRate(audioData: ModifiedDataView, inputParams: Audio
 		const previousPosition = Math.floor(interpolatePosition);
 		const nextPosition = previousPosition + 1;
 
-		const previousSample = audioData[getSampleMethod](previousPosition * bytesPerElement, inputEndianness === 'LE');
-		const nextSample = audioData[getSampleMethod](nextPosition * bytesPerElement, inputEndianness === 'LE');
+		const previousSample = audioData[getSampleMethod](previousPosition * bytesPerElement, isInputLe);
+		const nextSample = audioData[getSampleMethod](nextPosition * bytesPerElement, isInputLe);
 
 		const interpolatedValue = ((interpolatePosition - previousPosition) * ((nextSample - previousSample) / (nextPosition - previousPosition))) + previousSample;
 
-		allocDataView[setSampleMethod](index * bytesPerElement, interpolatedValue, mixerEndianness === 'LE');
+		allocDataView[setSampleMethod](index * bytesPerElement, interpolatedValue, isMixerLe);
 	}
 
 	return allocDataView;
