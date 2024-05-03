@@ -31,5 +31,8 @@ export function changeBitDepth(audioData: ModifiedDataView, inputParams: AudioIn
 		allocDataView[setSampleMethod](newSamplePosition, scaledSample, isMixerLe);
 	}
 
+	inputParams.bitDepth = mixerParams.bitDepth;
+	inputParams.endianness = mixerParams.endianness;
+
 	return allocDataView;
 }

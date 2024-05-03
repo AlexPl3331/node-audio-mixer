@@ -20,4 +20,6 @@ export function changeVolume(audioData: ModifiedDataView, params: AudioInputPara
 
 		audioData[setSampleMethod](index, volumedSample, isLe);
 	}
+
+	params.volume = 100;
 }

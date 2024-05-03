@@ -39,5 +39,8 @@ export function changeSampleRate(audioData: ModifiedDataView, inputParams: Audio
 		allocDataView[setSampleMethod](index * bytesPerElement, interpolatedValue, isMixerLe);
 	}
 
+	inputParams.sampleRate = mixerParams.sampleRate;
+	inputParams.endianness = mixerParams.endianness;
+
 	return allocDataView;
 }
