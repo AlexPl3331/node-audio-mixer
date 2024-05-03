@@ -30,5 +30,8 @@ export function changeChannelsCount(audioData: ModifiedDataView, inputParams: Au
 		}
 	}
 
+	inputParams.channels = mixerParams.channels;
+	inputParams.endianness = mixerParams.endianness;
+
 	return allocDataView;
 }

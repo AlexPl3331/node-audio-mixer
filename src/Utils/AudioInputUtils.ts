@@ -39,9 +39,6 @@ export class AudioInputUtils implements AudioUtils {
 	public checkBitDepth(): this {
 		if (this.changedParams.bitDepth !== this.audioMixerParams.bitDepth) {
 			this.audioData = changeBitDepth(this.audioData, this.changedParams, this.audioMixerParams);
-
-			this.changedParams.bitDepth = this.audioMixerParams.bitDepth;
-			this.changedParams.endianness = this.audioMixerParams.endianness;
 		}
 
 		return this;
@@ -50,9 +47,6 @@ export class AudioInputUtils implements AudioUtils {
 	public checkSampleRate(): this {
 		if (this.changedParams.sampleRate !== this.audioMixerParams.sampleRate) {
 			this.audioData = changeSampleRate(this.audioData, this.changedParams, this.audioMixerParams);
-
-			this.changedParams.sampleRate = this.audioMixerParams.sampleRate;
-			this.changedParams.endianness = this.audioMixerParams.endianness;
 		}
 
 		return this;
@@ -63,17 +57,16 @@ export class AudioInputUtils implements AudioUtils {
 			assertChannelsCount(this.changedParams.channels);
 
 			this.audioData = changeChannelsCount(this.audioData, this.changedParams, this.audioMixerParams);
-
-			this.changedParams.channels = this.audioMixerParams.channels;
-			this.changedParams.endianness = this.audioMixerParams.endianness;
 		}
 
 		return this;
 	}
 
 	public checkVolume(): this {
-		if (typeof this.changedParams.volume === 'number' && this.changedParams.volume !== 100) {
-			assertVolume(this.changedParams.volume);
+		const volume = this.changedParams.volume ?? 100;
+
+		if (volume > 100) {
+			assertVolume(volume);
 
 			changeVolume(this.audioData, this.changedParams);
 		}
