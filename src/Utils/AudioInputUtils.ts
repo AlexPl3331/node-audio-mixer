@@ -1,3 +1,6 @@
+import {type AudioUtils} from '../Types/AudioUtils';
+import {type AudioInputParams, type AudioMixerParams} from '../Types/ParamsTypes';
+
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
 
 import {assertVolume} from '../Asserts/AssertVolume';
@@ -7,9 +10,6 @@ import {changeVolume} from './AudioUtils/СhangeVolume';
 import {changeBitDepth} from './AudioUtils/ChangeBitDepth';
 import {changeSampleRate} from './AudioUtils/СhangeSampleRate';
 import {changeChannelsCount} from './AudioUtils/СhangeChannelsCount';
-
-import {type AudioUtils} from '../Types/AudioUtils';
-import {type AudioInputParams, type AudioMixerParams} from '../Types/ParamsTypes';
 
 export class AudioInputUtils implements AudioUtils {
 	private readonly audioInputParams: AudioInputParams;
