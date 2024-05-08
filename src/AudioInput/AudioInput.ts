@@ -1,6 +1,8 @@
 import {Writable} from 'stream';
 
-import {type OmitAudioParams, type AudioInputParams} from '../Types/ParamsTypes';
+import {type OmitAudioParams, type AudioInputParams, type AudioMixerParams} from '../Types/ParamsTypes';
+
+import {AudioInputUtils} from '../Utils/AudioInputUtils';
 
 type SelfRemoveFunction = (audioInput: AudioInput) => void;
 
@@ -8,13 +10,16 @@ export class AudioInput extends Writable {
 	private readonly audioInputParams: AudioInputParams;
 	private readonly selfRemoveFunction: SelfRemoveFunction | undefined;
 
+	private readonly audioUtils: AudioInputUtils;
 	private audioData: Int8Array = new Int8Array(0);
 
-	constructor(params: AudioInputParams, selfRemoveFunction?: SelfRemoveFunction) {
+	constructor(inputParams: AudioInputParams, mixerParams: AudioMixerParams, selfRemoveFunction?: SelfRemoveFunction) {
 		super();
 
-		this.audioInputParams = params;
+		this.audioInputParams = inputParams;
 		this.selfRemoveFunction = selfRemoveFunction;
+
+		this.audioUtils = new AudioInputUtils(inputParams, mixerParams);
 	}
 
 	get params(): Readonly<AudioInputParams> {
@@ -25,16 +30,23 @@ export class AudioInput extends Writable {
 		Object.assign(this.audioInputParams, params);
 	}
 
-	public get audioDataSize(): number {
+	public get dataSize(): number {
 		return this.audioData.length;
 	}
 
 	public _write(chunk: Int8Array, _: BufferEncoding, callback: (error?: Error | undefined) => void): void {
 		if (!this.closed) {
-			const audioData = new Int8Array(this.audioData.length + chunk.length);
+			const processedData = this.audioUtils.setAudioData(chunk)
+				.checkBitDepth()
+				.checkSampleRate()
+				.checkChannelsCount()
+				.checkVolume()
+				.getAudioData();
+
+			const audioData = new Int8Array(this.audioData.length + processedData.length);
 
 			audioData.set(this.audioData, this.audioData.length);
-			audioData.set(chunk, chunk.length);
+			audioData.set(processedData, processedData.length);
 
 			this.audioData = audioData;
 		}
@@ -42,26 +54,27 @@ export class AudioInput extends Writable {
 		callback();
 	}
 
-	public getAudioData(size: number): Int8Array {
-		const audioData = this.audioData.subarray(0, size);
-
-		this.audioData = this.audioData.subarray(size, this.audioData.length);
-
-		if (audioData.length === 0 && this.closed) {
-			this.removeInputSelf();
-		}
-
-		return audioData;
-	}
-
-	public closeInput(): void {
-		if (!this.writableEnded) {
+	public _destroy(_: Error, callback: (error?: Error | undefined) => void): void {
+		if (!this.closed) {
 			this.emit('close');
 
 			if (this.audioData.length === 0 || this.audioInputParams.forceClose) {
 				this.removeInputSelf();
 			}
 		}
+
+		callback();
+	}
+
+	public getData(size: number): Int8Array {
+		const audioData = this.audioData.slice(0, size);
+		this.audioData = this.audioData.slice(size);
+
+		if (audioData.length === 0 && this.closed) {
+			this.removeInputSelf();
+		}
+
+		return audioData;
 	}
 
 	private removeInputSelf(): void {
@@ -73,6 +86,6 @@ export class AudioInput extends Writable {
 			this.selfRemoveFunction(this);
 		}
 
-		this.end();
+		this.emit('end');
 	}
 }
