@@ -35,25 +35,29 @@ export class AudioMixerUtils implements AudioUtils {
 	}
 
 	public mixAudioData(): this {
-		const bytesPerElement = this.changedParams.bitDepth / 8;
+		if (this.dataCollection.length > 1) {
+			const bytesPerElement = this.changedParams.bitDepth / 8;
 
-		const maxValue = (2 ** (this.changedParams.bitDepth - 1)) - 1;
-		const minValue = -(maxValue + 1);
+			const maxValue = (2 ** (this.changedParams.bitDepth - 1)) - 1;
+			const minValue = -(maxValue + 1);
 
-		const isLe = isLittleEndian(this.changedParams.endianness);
+			const isLe = isLittleEndian(this.changedParams.endianness);
 
-		const audioData = new Int8Array(this.dataCollection[0].byteLength);
-		this.mixedData = new ModifiedDataView(audioData.buffer);
+			const audioData = new Int8Array(this.dataCollection[0].byteLength);
+			this.mixedData = new ModifiedDataView(audioData.buffer);
 
-		const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(this.changedParams.bitDepth)}`;
-		const setSampleMethod: `setInt${BitDepth}` = `set${getMethodName(this.changedParams.bitDepth)}`;
+			const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(this.changedParams.bitDepth)}`;
+			const setSampleMethod: `setInt${BitDepth}` = `set${getMethodName(this.changedParams.bitDepth)}`;
 
-		for (let index = 0; index < audioData.length; index += bytesPerElement) {
-			const samples = this.dataCollection.map(data => data[getSampleMethod](index, isLe));
-			const mixedSample = samples.reduce((sample, nextSample) => sample + nextSample, 0);
-			const clipSample = Math.min(Math.max(mixedSample, minValue), maxValue);
+			for (let index = 0; index < audioData.length; index += bytesPerElement) {
+				const samples = this.dataCollection.map(data => data[getSampleMethod](index, isLe));
+				const mixedSample = samples.reduce((sample, nextSample) => sample + nextSample, 0);
+				const clipSample = Math.min(Math.max(mixedSample, minValue), maxValue);
 
-			this.mixedData[setSampleMethod](index, clipSample, isLe);
+				this.mixedData[setSampleMethod](index, clipSample, isLe);
+			}
+		} else {
+			this.mixedData = new ModifiedDataView(this.dataCollection[0].buffer);
 		}
 
 		return this;
