@@ -17,7 +17,7 @@ export class AudioInputUtils implements AudioUtils {
 
 	private changedParams: AudioInputParams;
 
-	private readonly emptyData = new Int8Array(0);
+	private readonly emptyData = new Uint8Array(0);
 	private audioData: ModifiedDataView;
 
 	constructor(inputParams: AudioInputParams, mixerParams: AudioMixerParams) {
@@ -29,7 +29,7 @@ export class AudioInputUtils implements AudioUtils {
 		this.audioData = new ModifiedDataView(this.emptyData.buffer);
 	}
 
-	public setAudioData(audioData: Int8Array): this {
+	public setAudioData(audioData: Uint8Array): this {
 		this.audioData = new ModifiedDataView(audioData.buffer);
 		this.changedParams = {...this.audioInputParams};
 
@@ -74,7 +74,7 @@ export class AudioInputUtils implements AudioUtils {
 		return this;
 	}
 
-	public getAudioData(): Int8Array {
-		return new Int8Array(this.audioData.buffer);
+	public getAudioData(): Uint8Array {
+		return new Uint8Array(this.audioData.buffer);
 	}
 }

@@ -15,7 +15,7 @@ export class AudioMixerUtils implements AudioUtils {
 
 	private dataCollection: ModifiedDataView[] = [];
 
-	private readonly emptyData = new Int8Array(0);
+	private readonly emptyData = new Uint8Array(0);
 	private mixedData: ModifiedDataView;
 
 	constructor(mixerParams: AudioMixerParams) {
@@ -26,8 +26,8 @@ export class AudioMixerUtils implements AudioUtils {
 		this.mixedData = new ModifiedDataView(this.emptyData.buffer);
 	}
 
-	public setAudioData(audioData: Int8Array[]): this {
-		this.dataCollection = audioData.map((audioData: Int8Array) => new ModifiedDataView(audioData.buffer));
+	public setAudioData(audioData: Uint8Array[]): this {
+		this.dataCollection = audioData.map((audioData: Uint8Array) => new ModifiedDataView(audioData.buffer));
 
 		this.changedParams = {...this.audioMixerParams};
 
@@ -43,7 +43,7 @@ export class AudioMixerUtils implements AudioUtils {
 
 			const isLe = isLittleEndian(this.changedParams.endianness);
 
-			const audioData = new Int8Array(this.dataCollection[0].byteLength);
+			const audioData = new Uint8Array(this.dataCollection[0].byteLength);
 			this.mixedData = new ModifiedDataView(audioData.buffer);
 
 			const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(this.changedParams.bitDepth)}`;
@@ -75,7 +75,7 @@ export class AudioMixerUtils implements AudioUtils {
 		return this;
 	}
 
-	public getAudioData(): Int8Array {
-		return new Int8Array(this.mixedData.buffer);
+	public getAudioData(): Uint8Array {
+		return new Uint8Array(this.mixedData.buffer);
 	}
 }
