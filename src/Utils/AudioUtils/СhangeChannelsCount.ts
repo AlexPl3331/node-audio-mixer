@@ -14,7 +14,7 @@ export function changeChannelsCount(audioData: ModifiedDataView, inputParams: Au
 
 	const dataSize = Math.round(audioData.byteLength * mixerParams.channels / inputParams.channels);
 
-	const allocData = new Int8Array(dataSize);
+	const allocData = new Uint8Array(dataSize);
 	const allocDataView = new ModifiedDataView(allocData.buffer);
 
 	const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(inputParams.bitDepth)}`;

@@ -16,7 +16,7 @@ export function changeBitDepth(audioData: ModifiedDataView, inputParams: AudioIn
 
 	const dataSize = audioData.byteLength * (mixerParams.bitDepth / inputParams.bitDepth);
 
-	const allocData = new Int8Array(dataSize);
+	const allocData = new Uint8Array(dataSize);
 	const allocDataView = new ModifiedDataView(allocData.buffer);
 
 	const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(inputParams.bitDepth)}`;

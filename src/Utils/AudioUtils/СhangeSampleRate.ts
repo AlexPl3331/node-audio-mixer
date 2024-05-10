@@ -19,7 +19,7 @@ export function changeSampleRate(audioData: ModifiedDataView, inputParams: Audio
 
 	const dataSize = Math.floor(audioData.byteLength * (mixerParams.sampleRate / inputParams.sampleRate));
 
-	const allocData = new Int8Array(dataSize);
+	const allocData = new Uint8Array(dataSize);
 	const allocDataView = new ModifiedDataView(allocData.buffer);
 
 	const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(inputParams.bitDepth)}`;
