@@ -65,7 +65,7 @@ export class AudioInputUtils implements AudioUtils {
 	public checkVolume(): this {
 		const volume = this.changedParams.volume ?? 100;
 
-		if (volume > 100) {
+		if (volume !== 100) {
 			assertVolume(volume);
 
 			changeVolume(this.audioData, this.changedParams);

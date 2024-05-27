@@ -66,7 +66,7 @@ export class AudioMixerUtils implements AudioUtils {
 	public checkVolume(): this {
 		const volume = this.audioMixerParams.volume ?? 100;
 
-		if (volume > 100) {
+		if (volume !== 100) {
 			assertVolume(volume);
 
 			changeVolume(this.mixedData, this.changedParams);
