@@ -3,13 +3,13 @@ import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamsTy
 
 import {ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
 import {isLittleEndian} from './IsLittleEndian';
+import {getValueRange} from './GetValueRange';
 import {getMethodName} from './GetMethodName';
 
 export function mixAudioData(audioData: ModifiedDataView[], params: AudioInputParams | AudioMixerParams): ModifiedDataView {
 	const bytesPerElement = params.bitDepth / 8;
 
-	const maxValue = (2 ** (params.bitDepth - 1)) - 1;
-	const minValue = -(maxValue + 1);
+	const valueRange = getValueRange(params.bitDepth, params.unsigned as boolean);
 
 	const isLe = isLittleEndian(params.endianness);
 
@@ -23,7 +23,7 @@ export function mixAudioData(audioData: ModifiedDataView[], params: AudioInputPa
 		const samples = audioData.map(data => data[getSampleMethod](index, isLe));
 
 		const mixedSample = samples.reduce((sample, nextSample) => sample + nextSample, 0);
-		const clipSample = Math.min(Math.max(mixedSample, minValue), maxValue);
+		const clipSample = Math.min(Math.max(mixedSample, valueRange.min), valueRange.max);
 
 		mixedData[setSampleMethod](index, clipSample, isLe);
 	}
