@@ -62,7 +62,6 @@ export class AudioInput extends Writable {
 	public _destroy(error: Error, callback: (error?: Error | undefined) => void): void {
 		if (!this.closed) {
 			if (this.audioData.length === 0 || this.inputParams.forceClose) {
-				console.log();
 				this.removeInputSelf();
 			}
 		}
