@@ -1,4 +1,3 @@
-import {type BitDepth} from '../Types/AudioTypes';
 import {type AudioUtils} from '../Types/AudioUtils';
 import {type AudioMixerParams} from '../Types/ParamsTypes';
 
@@ -6,8 +5,7 @@ import {changeVolume} from './AudioUtils/СhangeVolume';
 import {assertVolume} from '../Asserts/AssertVolume';
 
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
-import {isLittleEndian} from './General/IsLittleEndian';
-import {getMethodName} from './General/GetMethodName';
+import {mixAudioData} from './General/MixAudioData';
 
 export class AudioMixerUtils implements AudioUtils {
 	private readonly audioMixerParams: AudioMixerParams;
@@ -34,28 +32,9 @@ export class AudioMixerUtils implements AudioUtils {
 		return this;
 	}
 
-	public mixAudioData(): this {
+	public mix(): this {
 		if (this.dataCollection.length > 1) {
-			const bytesPerElement = this.changedParams.bitDepth / 8;
-
-			const maxValue = (2 ** (this.changedParams.bitDepth - 1)) - 1;
-			const minValue = -(maxValue + 1);
-
-			const isLe = isLittleEndian(this.changedParams.endianness);
-
-			const audioData = new Uint8Array(this.dataCollection[0].byteLength);
-			this.mixedData = new ModifiedDataView(audioData.buffer);
-
-			const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(this.changedParams.bitDepth)}`;
-			const setSampleMethod: `setInt${BitDepth}` = `set${getMethodName(this.changedParams.bitDepth)}`;
-
-			for (let index = 0; index < audioData.length; index += bytesPerElement) {
-				const samples = this.dataCollection.map(data => data[getSampleMethod](index, isLe));
-				const mixedSample = samples.reduce((sample, nextSample) => sample + nextSample, 0);
-				const clipSample = Math.min(Math.max(mixedSample, minValue), maxValue);
-
-				this.mixedData[setSampleMethod](index, clipSample, isLe);
-			}
+			this.mixedData = mixAudioData(this.dataCollection, this.changedParams);
 		} else {
 			this.mixedData = new ModifiedDataView(this.dataCollection[0].buffer);
 		}

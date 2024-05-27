@@ -53,7 +53,7 @@ export class AudioMixer extends Readable {
 			}
 		} else {
 			let mixedData = this.audioUtils.setAudioData(dataCollection)
-				.mixAudioData()
+				.mix()
 				.checkVolume()
 				.getAudioData();
 
