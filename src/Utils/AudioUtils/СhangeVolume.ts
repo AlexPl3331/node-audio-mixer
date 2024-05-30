@@ -1,6 +1,6 @@
-import {type BitDepth} from '../../Types/AudioTypes';
+import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamTypes';
 import {type ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
-import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamsTypes';
+import {type IntType, type BitDepth} from '../../Types/AudioTypes';
 
 import {isLittleEndian} from '../General/IsLittleEndian';
 import {getMethodName} from '../General/GetMethodName';
@@ -11,8 +11,8 @@ export function changeVolume(audioData: ModifiedDataView, params: AudioInputPara
 
 	const isLe = isLittleEndian(params.endianness);
 
-	const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(params.bitDepth)}`;
-	const setSampleMethod: `setInt${BitDepth}` = `set${getMethodName(params.bitDepth)}`;
+	const getSampleMethod: `get${IntType}${BitDepth}` = `get${getMethodName(params.bitDepth, params.unsigned)}`;
+	const setSampleMethod: `set${IntType}${BitDepth}` = `set${getMethodName(params.bitDepth, params.unsigned)}`;
 
 	for (let index = 0; index < audioData.byteLength; index += bytesPerElement) {
 		const sample = audioData[getSampleMethod](index, isLe);

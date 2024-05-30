@@ -1,5 +1,5 @@
-import {type BitDepth} from '../../Types/AudioTypes';
+import {type IntType, type BitDepth} from '../../Types/AudioTypes';
 
-export function getMethodName(bitDepth: BitDepth): `Int${BitDepth}` {
-	return `Int${bitDepth}`;
+export function getMethodName(bitDepth: BitDepth, isUnsigned?: boolean): `${IntType}${BitDepth}` {
+	return `${isUnsigned ? 'Uint' : 'Int'}${bitDepth}`;
 }

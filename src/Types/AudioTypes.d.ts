@@ -4,4 +4,8 @@ type BitDepth = 8 | 16 | 24 | 32;
 
 type Endianness = 'LE' | 'BE';
 
-export type {SampleRate, BitDepth, Endianness};
+type IntType = 'Int' | 'Uint';
+
+export type {
+	SampleRate, BitDepth, Endianness, IntType,
+};
