@@ -1,6 +1,6 @@
 import {Readable} from 'stream';
 
-import {type AudioMixerParams, type AudioInputParams, type OmitAudioParams} from '../Types/ParamsTypes';
+import {type AudioMixerParams, type AudioInputParams, type OmitAudioParams} from '../Types/ParamTypes';
 
 import {AudioMixerUtils} from '../Utils/AudioMixerUtils';
 import {AudioInput} from '../AudioInput/AudioInput';

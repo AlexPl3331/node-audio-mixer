@@ -1,6 +1,6 @@
 import {Writable} from 'stream';
 
-import {type OmitAudioParams, type AudioInputParams, type AudioMixerParams} from '../Types/ParamsTypes';
+import {type OmitAudioParams, type AudioInputParams, type AudioMixerParams} from '../Types/ParamTypes';
 
 import {AudioInputUtils} from '../Utils/AudioInputUtils';
 
@@ -41,6 +41,7 @@ export class AudioInput extends Writable {
 			}
 
 			const processedData = this.audioUtils.setAudioData(chunk)
+				.checkIntType()
 				.checkBitDepth()
 				.checkSampleRate()
 				.checkChannelsCount()

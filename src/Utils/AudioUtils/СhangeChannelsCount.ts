@@ -1,6 +1,6 @@
 
-import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamsTypes';
-import {type BitDepth} from '../../Types/AudioTypes';
+import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamTypes';
+import {type IntType, type BitDepth} from '../../Types/AudioTypes';
 
 import {ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
 import {isLittleEndian} from '../General/IsLittleEndian';
@@ -17,8 +17,8 @@ export function changeChannelsCount(audioData: ModifiedDataView, inputParams: Au
 	const allocData = new Uint8Array(dataSize);
 	const allocDataView = new ModifiedDataView(allocData.buffer);
 
-	const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(inputParams.bitDepth)}`;
-	const setSampleMethod: `setInt${BitDepth}` = `set${getMethodName(mixerParams.bitDepth)}`;
+	const getSampleMethod: `get${IntType}${BitDepth}` = `get${getMethodName(inputParams.bitDepth, inputParams.unsigned)}`;
+	const setSampleMethod: `set${IntType}${BitDepth}` = `set${getMethodName(mixerParams.bitDepth, mixerParams.unsigned)}`;
 
 	for (let oldPosition = 0, newPosition = 0; oldPosition < audioData.byteLength; oldPosition += bytesPerElement) {
 		const sample = audioData[getSampleMethod](oldPosition, isInputLe);

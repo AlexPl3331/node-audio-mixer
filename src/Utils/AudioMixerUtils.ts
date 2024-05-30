@@ -1,5 +1,5 @@
 import {type AudioUtils} from '../Types/AudioUtils';
-import {type AudioMixerParams} from '../Types/ParamsTypes';
+import {type AudioMixerParams} from '../Types/ParamTypes';
 
 import {changeVolume} from './AudioUtils/СhangeVolume';
 import {assertVolume} from '../Asserts/AssertVolume';

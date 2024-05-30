@@ -1,5 +1,5 @@
 import {type AudioUtils} from '../Types/AudioUtils';
-import {type AudioInputParams, type AudioMixerParams} from '../Types/ParamsTypes';
+import {type AudioInputParams, type AudioMixerParams} from '../Types/ParamTypes';
 
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
 
@@ -7,6 +7,7 @@ import {assertVolume} from '../Asserts/AssertVolume';
 import {assertChannelsCount} from '../Asserts/AssertChannelsCount';
 
 import {changeVolume} from './AudioUtils/СhangeVolume';
+import {changeIntType} from './AudioUtils/ChangeIntType';
 import {changeBitDepth} from './AudioUtils/ChangeBitDepth';
 import {changeSampleRate} from './AudioUtils/СhangeSampleRate';
 import {changeChannelsCount} from './AudioUtils/СhangeChannelsCount';
@@ -32,6 +33,14 @@ export class AudioInputUtils implements AudioUtils {
 	public setAudioData(audioData: Uint8Array): this {
 		this.audioData = new ModifiedDataView(audioData.buffer);
 		this.changedParams = {...this.audioInputParams};
+
+		return this;
+	}
+
+	public checkIntType(): this {
+		if (Boolean(this.changedParams.unsigned) !== Boolean(this.audioMixerParams.unsigned)) {
+			changeIntType(this.audioData, this.changedParams, this.audioMixerParams);
+		}
 
 		return this;
 	}

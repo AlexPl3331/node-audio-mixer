@@ -7,6 +7,7 @@ type BasedParams = {
 	sampleRate: SampleRate;
 	channels: number;
 	bitDepth: BitDepth;
+	unsigned?: boolean;
 	volume?: number;
 	endianness?: Endianness;
 	forceClose?: boolean;

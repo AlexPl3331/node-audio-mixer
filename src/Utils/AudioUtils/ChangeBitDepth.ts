@@ -1,6 +1,6 @@
 
-import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamsTypes';
-import {type BitDepth} from '../../Types/AudioTypes';
+import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamTypes';
+import {type IntType, type BitDepth} from '../../Types/AudioTypes';
 
 import {ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
 import {isLittleEndian} from '../General/IsLittleEndian';
@@ -9,7 +9,9 @@ import {getMethodName} from '../General/GetMethodName';
 export function changeBitDepth(audioData: ModifiedDataView, inputParams: AudioInputParams, mixerParams: AudioMixerParams): ModifiedDataView {
 	const oldBytesPerElement = inputParams.bitDepth / 8;
 	const newBytesPerElement = mixerParams.bitDepth / 8;
+
 	const scalingFactor = 2 ** (mixerParams.bitDepth - inputParams.bitDepth);
+	const maxValue = 2 ** (mixerParams.bitDepth - 1);
 
 	const isInputLe = isLittleEndian(inputParams.endianness);
 	const isMixerLe = isLittleEndian(inputParams.endianness);
@@ -19,12 +21,17 @@ export function changeBitDepth(audioData: ModifiedDataView, inputParams: AudioIn
 	const allocData = new Uint8Array(dataSize);
 	const allocDataView = new ModifiedDataView(allocData.buffer);
 
-	const getSampleMethod: `getInt${BitDepth}` = `get${getMethodName(inputParams.bitDepth)}`;
-	const setSampleMethod: `setInt${BitDepth}` = `set${getMethodName(mixerParams.bitDepth)}`;
+	const getSampleMethod: `get${IntType}${BitDepth}` = `get${getMethodName(inputParams.bitDepth, inputParams.unsigned)}`;
+	const setSampleMethod: `set${IntType}${BitDepth}` = `set${getMethodName(mixerParams.bitDepth, mixerParams.unsigned)}`;
 
 	for (let index = 0; index < audioData.byteLength; index += oldBytesPerElement) {
 		const audioSample = audioData[getSampleMethod](index, isInputLe);
-		const scaledSample = Math.floor(audioSample * scalingFactor);
+
+		let scaledSample = Math.floor(audioSample * scalingFactor);
+
+		if (inputParams.unsigned) {
+			scaledSample -= maxValue;
+		}
 
 		const newSamplePosition = Math.floor(index * (newBytesPerElement / oldBytesPerElement));
 
