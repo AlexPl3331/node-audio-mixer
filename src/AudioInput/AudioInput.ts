@@ -1,6 +1,6 @@
-import {Writable} from 'stream';
-
 import {type OmitAudioParams, type AudioInputParams, type AudioMixerParams} from '../Types/ParamTypes';
+
+import {Writable} from 'stream';
 
 import {AudioInputUtils} from '../Utils/AudioInputUtils';
 

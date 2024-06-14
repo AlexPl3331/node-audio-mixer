@@ -16,7 +16,7 @@ type BasedParams = {
 
 export type AudioMixerParams = {
 	highWaterMark?: number;
-	generateSilent?: boolean;
+	generateSilence?: boolean;
 	silentDuration?: number;
 	delayTime?: DelayTimeType;
 } & BasedParams;

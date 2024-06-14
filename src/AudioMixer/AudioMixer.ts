@@ -1,6 +1,6 @@
-import {Readable} from 'stream';
-
 import {type AudioMixerParams, type AudioInputParams, type OmitAudioParams} from '../Types/ParamTypes';
+
+import {Readable} from 'stream';
 
 import {AudioMixerUtils} from '../Utils/AudioMixerUtils';
 import {AudioInput} from '../AudioInput/AudioInput';
@@ -9,9 +9,10 @@ export class AudioMixer extends Readable {
 	private readonly mixerParams: AudioMixerParams;
 	private readonly audioUtils: AudioMixerUtils;
 
-	private delayTimeValue = 1;
+	private delayTimeValue = 5;
+	private isWork = false;
 
-	private readonly audioInputs: AudioInput[] = [];
+	private readonly inputs: AudioInput[] = [];
 
 	constructor(params: AudioMixerParams) {
 		super();
@@ -35,23 +36,28 @@ export class AudioMixer extends Readable {
 	}
 
 	_read(): void {
-		const allInputsSize: number[] = this.audioInputs.map((input: AudioInput) => input.dataSize)
-			.filter((size: number) => size > 0);
+		const allInputsSize: number[] = this.inputs.map((input: AudioInput) => input.dataSize)
+			.filter(size => size >= (this.params.highWaterMark ?? (this.params.bitDepth / 8)));
 
 		const minDataSize: number = this.mixerParams.highWaterMark ?? Math.min(...allInputsSize);
 
-		const availableInputs = this.audioInputs.filter((input: AudioInput) => input.dataSize >= minDataSize);
-		const dataCollection: Uint8Array[] = availableInputs.map((input: AudioInput) => input.getData(minDataSize));
-
-		if (dataCollection.length === 0) {
-			if (this.mixerParams.generateSilent) {
+		if (allInputsSize.length === 0) {
+			if (this.mixerParams.generateSilence) {
 				const silentSize = ((this.mixerParams.sampleRate * this.mixerParams.channels) / 1000) * (this.mixerParams.silentDuration ?? this.delayTimeValue);
-
 				const silentData = new Uint8Array(silentSize);
 
 				this.unshift(silentData);
 			}
+
+			if (this.isWork) {
+				if (this.inputs.length === 0 && this.mixerParams.forceClose) {
+					this.destroy();
+				}
+			}
 		} else {
+			const availableInputs = this.inputs.filter((input: AudioInput) => input.dataSize >= minDataSize);
+			const dataCollection: Uint8Array[] = availableInputs.map((input: AudioInput) => input.getData(minDataSize));
+
 			let mixedData = this.audioUtils.setAudioData(dataCollection)
 				.mix()
 				.checkVolume()
@@ -67,7 +73,7 @@ export class AudioMixer extends Readable {
 
 	_destroy(error: Error, callback: (error?: Error | undefined) => void): void {
 		if (!this.closed) {
-			this.audioInputs.forEach((input: AudioInput) => {
+			this.inputs.forEach((input: AudioInput) => {
 				input.destroy();
 			});
 		}
@@ -78,22 +84,17 @@ export class AudioMixer extends Readable {
 	public createAudioInput(inputParams: AudioInputParams): AudioInput {
 		const audioInput = new AudioInput(inputParams, this.mixerParams, this.removeAudioinput.bind(this));
 
-		this.audioInputs.push(audioInput);
+		this.inputs.push(audioInput);
+		this.isWork ||= true;
 
 		return audioInput;
 	}
 
 	public removeAudioinput(audioInput: AudioInput): boolean {
-		const findAudioInput = this.audioInputs.indexOf(audioInput);
+		const findAudioInput = this.inputs.indexOf(audioInput);
 
 		if (findAudioInput !== -1) {
-			this.audioInputs.splice(findAudioInput, 1);
-
-			if (this.audioInputs.length === 0 && this.mixerParams.forceClose) {
-				this.destroy();
-
-				this.emit('end');
-			}
+			this.inputs.splice(findAudioInput, 1);
 
 			return true;
 		}
@@ -112,6 +113,10 @@ export class AudioMixer extends Readable {
 			}
 
 			setTimeout(this.loopRead.bind(this), this.delayTimeValue);
+
+			return;
 		}
+
+		this.emit('end');
 	}
 }
