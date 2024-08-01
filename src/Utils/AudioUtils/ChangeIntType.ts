@@ -1,11 +1,11 @@
-import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamTypes';
+import {type InputParams, type MixerParams} from '../../Types/ParamTypes';
 import {type IntType, type BitDepth} from '../../Types/AudioTypes';
 import {type ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
 
 import {getMethodName} from '../General/GetMethodName';
 import {isLittleEndian} from '../General/IsLittleEndian';
 
-export function changeIntType(audioData: ModifiedDataView, inputParams: AudioInputParams, mixerParams: AudioMixerParams): void {
+export function changeIntType(audioData: ModifiedDataView, inputParams: InputParams, mixerParams: MixerParams): void {
 	const bytesPerElement = inputParams.bitDepth / 8;
 
 	const maxValue = (2 ** (inputParams.bitDepth - 1));

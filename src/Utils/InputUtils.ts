@@ -1,5 +1,5 @@
 import {type AudioUtils} from '../Types/AudioUtils';
-import {type AudioInputParams, type AudioMixerParams} from '../Types/ParamTypes';
+import {type InputParams, type MixerParams} from '../Types/ParamTypes';
 
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
 
@@ -12,16 +12,16 @@ import {changeBitDepth} from './AudioUtils/ChangeBitDepth';
 import {changeSampleRate} from './AudioUtils/СhangeSampleRate';
 import {changeChannelsCount} from './AudioUtils/СhangeChannelsCount';
 
-export class AudioInputUtils implements AudioUtils {
-	private readonly audioInputParams: AudioInputParams;
-	private readonly audioMixerParams: AudioMixerParams;
+export class InputUtils implements AudioUtils {
+	private readonly audioInputParams: InputParams;
+	private readonly audioMixerParams: MixerParams;
 
-	private changedParams: AudioInputParams;
+	private changedParams: InputParams;
 
 	private readonly emptyData = new Uint8Array(0);
 	private audioData: ModifiedDataView;
 
-	constructor(inputParams: AudioInputParams, mixerParams: AudioMixerParams) {
+	constructor(inputParams: InputParams, mixerParams: MixerParams) {
 		this.audioInputParams = inputParams;
 		this.audioMixerParams = mixerParams;
 

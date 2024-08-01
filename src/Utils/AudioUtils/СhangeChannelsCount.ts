@@ -1,12 +1,12 @@
 
-import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamTypes';
+import {type InputParams, type MixerParams} from '../../Types/ParamTypes';
 import {type IntType, type BitDepth} from '../../Types/AudioTypes';
 
 import {ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
 import {isLittleEndian} from '../General/IsLittleEndian';
 import {getMethodName} from '../General/GetMethodName';
 
-export function changeChannelsCount(audioData: ModifiedDataView, inputParams: AudioInputParams, mixerParams: AudioMixerParams): ModifiedDataView {
+export function changeChannelsCount(audioData: ModifiedDataView, inputParams: InputParams, mixerParams: MixerParams): ModifiedDataView {
 	const bytesPerElement = mixerParams.bitDepth / 8;
 
 	const isInputLe = isLittleEndian(inputParams.endianness);

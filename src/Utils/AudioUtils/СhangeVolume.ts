@@ -1,11 +1,11 @@
-import {type AudioInputParams, type AudioMixerParams} from '../../Types/ParamTypes';
+import {type InputParams, type MixerParams} from '../../Types/ParamTypes';
 import {type ModifiedDataView} from '../../ModifiedDataView/ModifiedDataView';
 import {type IntType, type BitDepth} from '../../Types/AudioTypes';
 
 import {isLittleEndian} from '../General/IsLittleEndian';
 import {getMethodName} from '../General/GetMethodName';
 
-export function changeVolume(audioData: ModifiedDataView, params: AudioInputParams | AudioMixerParams): void {
+export function changeVolume(audioData: ModifiedDataView, params: InputParams | MixerParams): void {
 	const bytesPerElement = params.bitDepth / 8;
 	const volume = params.volume! / 100;
 
