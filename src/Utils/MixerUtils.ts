@@ -1,5 +1,5 @@
 import {type AudioUtils} from '../Types/AudioUtils';
-import {type AudioMixerParams} from '../Types/ParamTypes';
+import {type MixerParams} from '../Types/ParamTypes';
 
 import {changeVolume} from './AudioUtils/СhangeVolume';
 import {assertVolume} from '../Asserts/AssertVolume';
@@ -7,16 +7,16 @@ import {assertVolume} from '../Asserts/AssertVolume';
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
 import {mixAudioData} from './General/MixAudioData';
 
-export class AudioMixerUtils implements AudioUtils {
-	private readonly audioMixerParams: AudioMixerParams;
-	private changedParams: AudioMixerParams;
+export class MixerUtils implements AudioUtils {
+	private readonly audioMixerParams: MixerParams;
+	private changedParams: MixerParams;
 
 	private dataCollection: ModifiedDataView[] = [];
 
 	private readonly emptyData = new Uint8Array(0);
 	private mixedData: ModifiedDataView;
 
-	constructor(mixerParams: AudioMixerParams) {
+	constructor(mixerParams: MixerParams) {
 		this.audioMixerParams = mixerParams;
 
 		this.changedParams = {...this.audioMixerParams};
