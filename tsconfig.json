@@ -1,9 +1,9 @@
 {
     "compilerOptions": {
-        "target": "es2022",
+        "target": "es2021",
         "module": "CommonJS",
         "lib": [
-            "es2023"
+            "es2021"
         ],
         "moduleResolution": "Node",
         "outDir": "./dist",
@@ -16,13 +16,13 @@
         "noImplicitReturns": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "sourceMap": false,
-        "noImplicitAny": false,
-        "noImplicitThis": false,
-        "strictNullChecks": false
+        "strict": true,
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "strictNullChecks": true
     },
     "include": [
         "src/**/*",
-        "examples/**/*"
+        "examples/**/*",
     ],
 }
