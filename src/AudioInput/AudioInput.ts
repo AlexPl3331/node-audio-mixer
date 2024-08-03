@@ -69,6 +69,12 @@ export class AudioInput extends Writable {
 
 	public _destroy(error: Error, callback: (error?: Error | undefined) => void): void {
 		if (!this.closed) {
+			if ((this.audioData.length === 0 && this.correctionBuffer.length === 0) || this.inputParams.forceClose) {
+				this.removeInputSelf();
+			
+			return;
+			}
+
 			if (this.correctionBuffer.length > 0) {
 				const bytesPerElement = this.mixerParams.bitDepth / 8;
 
@@ -85,10 +91,6 @@ export class AudioInput extends Writable {
 
 				this.audioData = tempChunk;
 				this.correctionBuffer = new Uint8Array(0);
-			}
-
-			if (this.audioData.length === 0 || this.inputParams.autoClose) {
-				this.removeInputSelf();
 			}
 		}
 
