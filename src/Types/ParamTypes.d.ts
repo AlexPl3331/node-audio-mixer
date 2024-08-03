@@ -10,11 +10,11 @@ type BasedParams = {
 	endianness?: Endianness;
 	unsigned?: boolean;
 	volume?: number;
-	autoClose?: boolean;
 	preProcessData?: PreProcessDataFunction;
 };
 
 export type MixerParams = {
+	autoClose?: boolean;
 	highWaterMark?: number;
 	generateSilence?: boolean;
 	silentDuration?: number;
@@ -22,6 +22,7 @@ export type MixerParams = {
 } & BasedParams;
 
 export type InputParams = {
+	forceClose?: boolean;
 	correctByteSize?: boolean;
 } & BasedParams;
 
