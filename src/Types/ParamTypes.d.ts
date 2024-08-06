@@ -1,7 +1,7 @@
 import {type SampleRate, type BitDepth, type Endianness} from './AudioTypes';
 
 type DelayTimeType = number | (() => number);
-type PreProcessDataFunction = (data: Uint8Array) => Uint8Array;
+type PreProcessFunction = (data: Uint8Array) => Uint8Array;
 
 type BasedParams = {
 	sampleRate: SampleRate;
@@ -10,7 +10,7 @@ type BasedParams = {
 	endianness?: Endianness;
 	unsigned?: boolean;
 	volume?: number;
-	preProcessData?: PreProcessDataFunction;
+	preProcessData?: PreProcessFunction;
 };
 
 export type MixerParams = {
