@@ -1,15 +1,18 @@
 {
   "name": "node-audio-mixer",
-  "version": "1.3.7",
+  "version": "2.0.0",
   "description": "PCM audio mixer with customizable parameters",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
+  "scripts": {
+    "prepublishOnly": "eslint && tsc"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "files": [
     "dist/src/**"
   ],
-  "scripts": {
-    "prepublishOnly": "tsc"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/AlexPl3331/node-audio-mixer"
@@ -23,13 +26,15 @@
   "author": "Alex Pl (https://github.com/AlexPl3331)",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^22.1.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.0",
-    "@typescript-eslint/parser": "^8.0.0",
-    "eslint": "^9.8.0",
-    "eslint-config-xo": "^0.44.0",
-    "eslint-config-xo-typescript": "^3.0.0",
-    "ts-node": "^10.9.2",
+    "@types/node": "^22.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.1",
+    "@typescript-eslint/parser": "^8.0.1",
+    "eslint": "^9.9.0",
+    "eslint-config-xo-typescript": "^6.0.0",
+    "globals": "^15.9.0",
     "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "eslint-plugin-import": "^2.29.1"
   }
 }
