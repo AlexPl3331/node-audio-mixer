@@ -8,16 +8,14 @@ import {getMethodName} from '../General/GetMethodName';
 export function changeSampleRate(audioData: ModifiedDataView, inputParams: InputParams, mixerParams: MixerParams): ModifiedDataView {
 	const bytesPerElement = inputParams.bitDepth / 8;
 
-	const isInputLe = isLittleEndian(inputParams.endianness);
-	const isMixerLe = isLittleEndian(mixerParams.endianness);
+	const isLe = isLittleEndian(inputParams.endianness);
 
-	const isDownsample = inputParams.sampleRate > mixerParams.sampleRate;
+	const scaleFactor = inputParams.sampleRate / mixerParams.sampleRate;
 
-	const scaleFactor = isDownsample
-		? inputParams.sampleRate / mixerParams.sampleRate
-		: mixerParams.sampleRate / inputParams.sampleRate;
+	const totalInputSamples = Math.floor(audioData.byteLength / bytesPerElement);
+	const totalOutputSamples = Math.ceil(totalInputSamples / scaleFactor);
 
-	const dataSize = Math.floor(audioData.byteLength * (mixerParams.sampleRate / inputParams.sampleRate));
+	const dataSize = totalOutputSamples * bytesPerElement;
 
 	const allocData = new Uint8Array(dataSize);
 	const allocDataView = new ModifiedDataView(allocData.buffer);
@@ -25,18 +23,21 @@ export function changeSampleRate(audioData: ModifiedDataView, inputParams: Input
 	const getSampleMethod: `get${IntType}${BitDepth}` = `get${getMethodName(inputParams.bitDepth, inputParams.unsigned)}`;
 	const setSampleMethod: `set${IntType}${BitDepth}` = `set${getMethodName(mixerParams.bitDepth, mixerParams.unsigned)}`;
 
-	for (let index = 0; index < dataSize / bytesPerElement; index++) {
-		const interpolatePosition = isDownsample ? index * scaleFactor : index / scaleFactor;
+	for (let index = 0; index < totalOutputSamples; index++) {
+		const interpolatePosition = index * scaleFactor;
 
 		const previousPosition = Math.floor(interpolatePosition);
 		const nextPosition = previousPosition + 1;
 
-		const previousSample = audioData[getSampleMethod](previousPosition * bytesPerElement, isInputLe);
-		const nextSample = audioData[getSampleMethod](nextPosition * bytesPerElement, isInputLe);
+		const previousSample = audioData[getSampleMethod](previousPosition * bytesPerElement, isLe);
 
-		const interpolatedValue = ((interpolatePosition - previousPosition) * ((nextSample - previousSample) / (nextPosition - previousPosition))) + previousSample;
+		const nextSample = nextPosition < totalInputSamples
+			? audioData[getSampleMethod](nextPosition * bytesPerElement, isLe)
+			: previousSample;
 
-		allocDataView[setSampleMethod](index * bytesPerElement, interpolatedValue, isMixerLe);
+		const interpolatedValue = ((interpolatePosition - previousPosition) * (nextSample - previousSample)) + previousSample;
+
+		allocDataView[setSampleMethod](index * bytesPerElement, interpolatedValue, isLe);
 	}
 
 	inputParams.sampleRate = mixerParams.sampleRate;

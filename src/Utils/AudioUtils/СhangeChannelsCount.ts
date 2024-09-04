@@ -9,8 +9,7 @@ import {getMethodName} from '../General/GetMethodName';
 export function changeChannelsCount(audioData: ModifiedDataView, inputParams: InputParams, mixerParams: MixerParams): ModifiedDataView {
 	const bytesPerElement = mixerParams.bitDepth / 8;
 
-	const isInputLe = isLittleEndian(inputParams.endianness);
-	const isMixerLe = isLittleEndian(mixerParams.endianness);
+	const isLe = isLittleEndian(inputParams.endianness);
 
 	const dataSize = Math.round(audioData.byteLength * mixerParams.channels / inputParams.channels);
 
@@ -21,12 +20,12 @@ export function changeChannelsCount(audioData: ModifiedDataView, inputParams: In
 	const setSampleMethod: `set${IntType}${BitDepth}` = `set${getMethodName(mixerParams.bitDepth, mixerParams.unsigned)}`;
 
 	for (let oldPosition = 0, newPosition = 0; oldPosition < audioData.byteLength; oldPosition += bytesPerElement) {
-		const sample = audioData[getSampleMethod](oldPosition, isInputLe);
+		const sample = audioData[getSampleMethod](oldPosition, isLe);
 
 		const nextPosition = newPosition + (bytesPerElement * mixerParams.channels);
 
 		for (newPosition; newPosition < nextPosition; newPosition += bytesPerElement) {
-			allocDataView[setSampleMethod](newPosition, sample, isMixerLe);
+			allocDataView[setSampleMethod](newPosition, sample, isLe);
 		}
 	}
 

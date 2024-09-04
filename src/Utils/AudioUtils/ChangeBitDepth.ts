@@ -13,8 +13,7 @@ export function changeBitDepth(audioData: ModifiedDataView, inputParams: InputPa
 	const scalingFactor = 2 ** (mixerParams.bitDepth - inputParams.bitDepth);
 	const maxValue = 2 ** (mixerParams.bitDepth - 1);
 
-	const isInputLe = isLittleEndian(inputParams.endianness);
-	const isMixerLe = isLittleEndian(inputParams.endianness);
+	const isLe = isLittleEndian(inputParams.endianness);
 
 	const dataSize = audioData.byteLength * (mixerParams.bitDepth / inputParams.bitDepth);
 
@@ -25,7 +24,7 @@ export function changeBitDepth(audioData: ModifiedDataView, inputParams: InputPa
 	const setSampleMethod: `set${IntType}${BitDepth}` = `set${getMethodName(mixerParams.bitDepth, mixerParams.unsigned)}`;
 
 	for (let index = 0; index < audioData.byteLength; index += oldBytesPerElement) {
-		const audioSample = audioData[getSampleMethod](index, isInputLe);
+		const audioSample = audioData[getSampleMethod](index, isLe);
 
 		let scaledSample = Math.floor(audioSample * scalingFactor);
 
@@ -35,11 +34,10 @@ export function changeBitDepth(audioData: ModifiedDataView, inputParams: InputPa
 
 		const newSamplePosition = Math.floor(index * (newBytesPerElement / oldBytesPerElement));
 
-		allocDataView[setSampleMethod](newSamplePosition, scaledSample, isMixerLe);
+		allocDataView[setSampleMethod](newSamplePosition, scaledSample, isLe);
 	}
 
 	inputParams.bitDepth = mixerParams.bitDepth;
-	inputParams.endianness = mixerParams.endianness;
 
 	return allocDataView;
 }
