@@ -47,18 +47,20 @@ export class AudioInput extends Writable {
 				chunk = this.inputParams.preProcessData(chunk);
 			}
 
-			const bytesPerElement = this.mixerParams.bitDepth / 8;
+			const bytesPerElement = this.inputParams.bitDepth / 8;
 
 			if (chunk.length % bytesPerElement !== 0) {
 				chunk = this.correctByteSize(chunk);
 			}
 
 			if (chunk.length > 0) {
-				const newSize = this.audioData.length + chunk.length;
+				const processedData = this.processData(chunk);
+
+				const newSize = this.audioData.length + processedData.length;
 
 				const tempChunk = new Uint8Array(newSize);
 				tempChunk.set(this.audioData, 0);
-				tempChunk.set(chunk, Math.abs(chunk.length - this.audioData.length - chunk.length));
+				tempChunk.set(processedData, this.audioData.length);
 
 				this.audioData = tempChunk;
 			}
@@ -71,26 +73,12 @@ export class AudioInput extends Writable {
 		if (!this.closed) {
 			if ((this.audioData.length === 0 && this.correctionBuffer.length === 0) || this.inputParams.forceClose) {
 				this.removeInputSelf();
-			
-			return;
+
+				return;
 			}
 
 			if (this.correctionBuffer.length > 0) {
-				const bytesPerElement = this.mixerParams.bitDepth / 8;
-
-				const newSize = this.audioData.length + this.correctionBuffer.length;
-				const remainder = newSize % bytesPerElement;
-
-				const zeroSample = getZeroSample(this.inputParams.bitDepth, this.inputParams.unsigned);
-
-				const tempChunk = new Uint8Array(newSize + remainder)
-					.fill(zeroSample);
-
-				tempChunk.set(this.correctionBuffer, 0);
-				tempChunk.set(this.audioData, this.correctionBuffer.length);
-
-				this.audioData = tempChunk;
-				this.correctionBuffer = new Uint8Array(0);
+				this.audioData = this.correctByteSize(this.correctionBuffer, true);
 			}
 		}
 
@@ -100,17 +88,13 @@ export class AudioInput extends Writable {
 	public getData(size: number): Uint8Array {
 		const zeroSample = getZeroSample(this.inputParams.bitDepth, this.inputParams.unsigned);
 
-		const inputSize = size * (this.mixerParams.bitDepth / this.inputParams.bitDepth);
-
-		let tempChunk = new Uint8Array(inputSize)
+		const tempChunk = new Uint8Array(size)
 			.fill(zeroSample);
 
-		if ((this.audioData.length < inputSize && this.closed) || this.audioData.length >= inputSize) {
-			tempChunk.set(this.audioData.slice(0, inputSize));
+		if ((this.audioData.length < size && this.closed) || this.audioData.length >= size) {
+			tempChunk.set(this.audioData.slice(0, size));
 
-			tempChunk = this.processData(tempChunk);
-
-			this.audioData = this.audioData.slice(inputSize);
+			this.audioData = this.audioData.slice(size);
 		}
 
 		if (this.audioData.length === 0 && this.closed) {
@@ -120,7 +104,7 @@ export class AudioInput extends Writable {
 		return tempChunk;
 	}
 
-	private correctByteSize(chunk: Uint8Array): Uint8Array {
+	private correctByteSize(chunk: Uint8Array, isProcessed?: boolean): Uint8Array {
 		if (!this.params.correctByteSize) {
 			return new Uint8Array(0);
 		}
@@ -140,7 +124,7 @@ export class AudioInput extends Writable {
 			this.correctionBuffer = new Uint8Array(0);
 		}
 
-		const bytesPerElement = this.mixerParams.bitDepth / 8;
+		const bytesPerElement = (isProcessed ? this.mixerParams : this.inputParams).bitDepth / 8;
 
 		const chunkSize = chunk.length + this.correctionBuffer.length;
 		const remainder = chunkSize % bytesPerElement;
@@ -160,10 +144,11 @@ export class AudioInput extends Writable {
 
 	private processData(chunk: Uint8Array): Uint8Array {
 		return this.audioUtils.setAudioData(chunk)
-			.checkIntType()
 			.checkBitDepth()
 			.checkSampleRate()
 			.checkChannelsCount()
+			.checkIntType()
+			.checkEndianness()
 			.checkVolume()
 			.getAudioData();
 	}

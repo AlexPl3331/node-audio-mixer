@@ -2,7 +2,6 @@ import {type AudioUtils} from '../Types/AudioUtils';
 import {type MixerParams} from '../Types/ParamTypes';
 
 import {changeVolume} from './AudioUtils/СhangeVolume';
-import {assertVolume} from '../Asserts/AssertVolume';
 
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
 import {mixAudioData} from './General/MixAudioData';
@@ -45,9 +44,7 @@ export class MixerUtils implements AudioUtils {
 	public checkVolume(): this {
 		const volume = this.audioMixerParams.volume ?? 100;
 
-		if (volume !== 100) {
-			assertVolume(volume);
-
+		if (volume < 100) {
 			changeVolume(this.mixedData, this.changedParams);
 		}
 

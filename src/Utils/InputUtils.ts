@@ -3,7 +3,6 @@ import {type InputParams, type MixerParams} from '../Types/ParamTypes';
 
 import {ModifiedDataView} from '../ModifiedDataView/ModifiedDataView';
 
-import {assertVolume} from '../Asserts/AssertVolume';
 import {assertChannelsCount} from '../Asserts/AssertChannelsCount';
 
 import {changeVolume} from './AudioUtils/СhangeVolume';
@@ -11,6 +10,7 @@ import {changeIntType} from './AudioUtils/ChangeIntType';
 import {changeBitDepth} from './AudioUtils/ChangeBitDepth';
 import {changeSampleRate} from './AudioUtils/СhangeSampleRate';
 import {changeChannelsCount} from './AudioUtils/СhangeChannelsCount';
+import {changeEndianness} from './AudioUtils/ChangeEndianness';
 
 export class InputUtils implements AudioUtils {
 	private readonly audioInputParams: InputParams;
@@ -39,7 +39,7 @@ export class InputUtils implements AudioUtils {
 
 	public checkIntType(): this {
 		if (Boolean(this.changedParams.unsigned) !== Boolean(this.audioMixerParams.unsigned)) {
-			changeIntType(this.audioData, this.changedParams, this.audioMixerParams);
+			changeIntType(this.audioData, this.changedParams, this.audioMixerParams.unsigned);
 		}
 
 		return this;
@@ -74,10 +74,16 @@ export class InputUtils implements AudioUtils {
 	public checkVolume(): this {
 		const volume = this.changedParams.volume ?? 100;
 
-		if (volume !== 100) {
-			assertVolume(volume);
-
+		if (volume < 100) {
 			changeVolume(this.audioData, this.changedParams);
+		}
+
+		return this;
+	}
+
+	public checkEndianness(): this {
+		if (this.changedParams.endianness !== this.audioMixerParams.endianness) {
+			changeEndianness(this.audioData, this.changedParams, this.audioMixerParams);
 		}
 
 		return this;
