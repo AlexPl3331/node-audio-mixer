@@ -1,17 +1,13 @@
 /* eslint-disable no-bitwise */
-type Int24Byte = [number, number, number];
-
 export class ModifiedDataView extends DataView {
 	public getInt24(byteOffset: number, littleEndian?: boolean): number {
-		const int24Byte = this.getByte(byteOffset, littleEndian);
+		const byte = this.getByte(byteOffset, littleEndian);
 
-		return (int24Byte[0] << 16) | (int24Byte[1] << 8) | int24Byte[2];
+		return (byte << 8) >> 8;
 	}
 
 	public getUint24(byteOffset: number, littleEndian?: boolean): number {
-		const int24Byte = this.getByte(byteOffset, littleEndian, true);
-
-		return (int24Byte[0] << 16) | (int24Byte[1] << 8) | int24Byte[2];
+		return this.getByte(byteOffset, littleEndian);
 	}
 
 	public setInt24(byteOffset: number, value: number, littleEndian?: boolean): void {
@@ -22,25 +18,29 @@ export class ModifiedDataView extends DataView {
 		this.setByte(byteOffset, value, littleEndian, true);
 	}
 
-	private getByte(byteOffset: number, littleEndian?: boolean, isUnsigned?: boolean): Int24Byte {
-		let bytes: Int24Byte;
+	private getByte(byteOffset: number, littleEndian?: boolean): number {
+		const bytes: number[] = [
+			this.getUint8(byteOffset),
+			this.getUint8(byteOffset + 1),
+			this.getUint8(byteOffset + 2),
+		];
 
-		const methodName: 'getInt8' | 'getUint8' = isUnsigned ? 'getUint8' : 'getInt8';
-
-		bytes = [this[methodName](byteOffset), this[methodName](byteOffset + 1), this[methodName](byteOffset + 2)];
-
-		if (!littleEndian) {
-			bytes = bytes.reverse() as Int24Byte;
+		if (littleEndian) {
+			bytes.reverse();
 		}
 
-		return bytes;
+		return (bytes[0] << 16) | (bytes[1] << 8) | bytes[2];
 	}
 
 	private setByte(byteOffset: number, value: number, littleEndian?: boolean, isUnsigned?: boolean): void {
-		let bytes: Int24Byte = [value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff];
+		const bytes: number[] = [
+			(value >> 16),
+			(value >> 8),
+			value,
+		];
 
-		if (!littleEndian) {
-			bytes = bytes.reverse() as Int24Byte;
+		if (littleEndian) {
+			bytes.reverse();
 		}
 
 		const methodName: 'setInt8' | 'setUint8' = isUnsigned ? 'setUint8' : 'setInt8';
