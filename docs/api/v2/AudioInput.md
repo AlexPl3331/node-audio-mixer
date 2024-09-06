@@ -35,32 +35,32 @@ console.log(input.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, vo
 ```
 
 ### input.destroy()
-Closes the `AudioInput`.
+Destroys the `AudioInput`.
 
 ```js
 input.destroy();
 ```
 
-> Note: `AudioInput` is automatically removes when it's emits "end".
-> To remove it immediately, set `forceClose` to `true`.
+> Note: `AudioInput` is automatically removes from the `AudioMixer` when it's closed and empty.
+> To remove it immediately (with remaining data), set `forceClose` to `true`.
 
 
 ## Events: AudioInput
 
-### Event 'close'
-Emitted when you use `destroy` in the `AudioInput`.
-
-```js
-input.on('close', () => {
-  console.log('AudioInput has closed');
-})
-```
-
 ### Event 'end'
-Emitted when the `AudioInput` is empty.
+Emitted when you use `destroy` in the `AudioInput`.
 
 ```js
 input.on('end', () => {
   console.log('AudioInput has finished its work');
+})
+```
+
+### Event 'close'
+Emitted when the `AudioInput` is empty.
+
+```js
+input.on('close', () => {
+  console.log('AudioInput has closed');
 })
 ```
