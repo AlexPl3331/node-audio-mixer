@@ -115,7 +115,7 @@ console.log(mixer.removeAudioInput(secondInput)); // false
 ```
 
 ### AudioMixer.destroy()
-Closes all inputs and `AudioMixer`.
+Destroys the `AudioMixer` and all `AudioInputs`.
 
 ```js
 mixer.destroy();
@@ -124,20 +124,38 @@ mixer.destroy();
 
 ## Events: AudioMixer
 
-### Event 'close'
-Emitted when you use `destroy` in the `AudioMixer` or when all `AudioInputs` are closed with `autoClose` enabled.
+### Event 'createInput'
+Emitted when the `AudioInput` is created in `AudioMixer`.
 
 ```js
-mixer.on('close', () => {
-  console.log('AudioMixer has closed');
+mixer.on('createInput', () => {
+  console.log('AudioInput has been created');
+})
+```
+
+### Event 'removeInput'
+Emitted when the `AudioInput` is removed from the `AudioMixer`.
+
+```js
+mixer.on('removeInput', () => {
+  console.log('AudioInput has been removed');
 })
 ```
 
 ### Event 'end'
-Emitted after `close` and when the `AudioMixer` no longer has any `AudioInputs`.
+Emitted when the `AudioMixer` is destroyed.
 
 ```js
 mixer.on('end', () => {
   console.log('AudioMixer has finished its work');
+})
+```
+
+### Event 'close'
+Emitted after `end` when all `AudioInputs` are closed and if `autoClose` is enabled.
+
+```js
+mixer.on('close', () => {
+  console.log('AudioMixer has closed');
 })
 ```
