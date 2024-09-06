@@ -161,7 +161,5 @@ export class AudioInput extends Writable {
 		if (typeof this.selfRemoveFunction === 'function') {
 			this.selfRemoveFunction(this);
 		}
-
-		this.emit('end');
 	}
 }
