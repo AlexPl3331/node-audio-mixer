@@ -11,7 +11,7 @@ export class AudioMixer extends Readable {
 	private readonly mixerParams: MixerParams;
 	private readonly audioUtils: MixerUtils;
 
-	private delayTimeValue = 5;
+	private delayTimeValue = 1;
 	private isWork = false;
 
 	private readonly inputs: AudioInput[] = [];
@@ -93,6 +93,8 @@ export class AudioMixer extends Readable {
 		this.inputs.push(audioInput);
 		this.isWork ||= true;
 
+		this.emit('createInput');
+
 		return audioInput;
 	}
 
@@ -101,6 +103,8 @@ export class AudioMixer extends Readable {
 
 		if (findAudioInput !== -1) {
 			this.inputs.splice(findAudioInput, 1);
+
+			this.emit('removeInput');
 
 			return true;
 		}
@@ -123,6 +127,6 @@ export class AudioMixer extends Readable {
 			return;
 		}
 
-		this.emit('end');
+		this.unshift(null);
 	}
 }
