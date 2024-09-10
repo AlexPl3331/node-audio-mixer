@@ -113,7 +113,7 @@ export class AudioMixer extends Readable {
 	}
 
 	private loopRead(): void {
-		if (!this.closed) {
+		if (!this.closed || this.inputs.length > 0) {
 			if (!this.isPaused()) {
 				this._read();
 
