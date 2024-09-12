@@ -26,15 +26,13 @@
   "author": "Alex Pl (https://github.com/AlexPl3331)",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^22.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.0.1",
-    "@typescript-eslint/parser": "^8.0.1",
-    "eslint": "^9.9.0",
+    "@types/node": "^22.5.4",
+    "@typescript-eslint/eslint-plugin": "^8.5.0",
+    "@typescript-eslint/parser": "^8.5.0",
+    "eslint": "^9.10.0",
     "eslint-config-xo-typescript": "^6.0.0",
     "globals": "^15.9.0",
-    "typescript": "^5.5.4"
-  },
-  "dependencies": {
-    "eslint-plugin-import": "^2.29.1"
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.2"
   }
 }
