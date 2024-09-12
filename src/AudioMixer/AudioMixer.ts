@@ -77,7 +77,7 @@ export class AudioMixer extends Readable {
 		}
 	}
 
-	_destroy(error: Error, callback: (error?: Error | undefined) => void): void {
+	_destroy(error: Error, callback: (error?: Error) => void): void {
 		if (!this.closed) {
 			this.inputs.forEach((input: AudioInput) => {
 				input.destroy();
