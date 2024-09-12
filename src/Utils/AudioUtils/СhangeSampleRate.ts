@@ -41,7 +41,6 @@ export function changeSampleRate(audioData: ModifiedDataView, inputParams: Input
 	}
 
 	inputParams.sampleRate = mixerParams.sampleRate;
-	inputParams.endianness = mixerParams.endianness;
 
 	return allocDataView;
 }
