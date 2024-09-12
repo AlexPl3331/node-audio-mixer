@@ -54,8 +54,8 @@ mixer.params = {
 console.log(mixer.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, volume: 50, autoClose: true }
 ```
 
-### AudioMixer.createAudioInput(inputArgs)
-- `inputArgs` {Object}
+### AudioMixer.createAudioInput(inputParams)
+- `inputParams` {Object}
 
   - `sampleRate` {Number} Input sample rate in the `AudioInput`.
 

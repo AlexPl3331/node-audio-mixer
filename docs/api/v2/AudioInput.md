@@ -2,9 +2,9 @@
 This class represents an `AudioInput`. It extends `Writable`.
 
 ### new AudioInput(inputParams, mixerParams, removeFunction?)
- - `inputArgs` {[InputParams](./AudioMixer.md#audiomixercreateaudioinputinputargs)} `AudioInput` params.
+ - `inputParams` {[InputParams](./AudioMixer.md#audiomixercreateaudioinputinputparams)} `AudioInput` params.
   
- - `mixerArgs` {[MixerParams](./AudioMixer.md#new-audiomixermixerparams)} `AudioMixer` params.
+ - `mixerParams` {[MixerParams](./AudioMixer.md#new-audiomixermixerparams)} `AudioMixer` params.
   
  - `selfRemoveFunction` {Function} Function to remove `AudioInput` from the `AudioMixer`.
 
