@@ -1,6 +1,7 @@
 import {type OmitSomeParams, type InputParams, type MixerParams} from '../Types/ParamTypes';
 
 import {Writable} from 'stream';
+import {endianness} from 'os';
 
 import {InputUtils} from '../Utils/InputUtils';
 import {getZeroSample} from '../Utils/General/GetZeroSample';
@@ -22,6 +23,8 @@ export class AudioInput extends Writable {
 		super();
 
 		this.inputParams = inputParams;
+		this.inputParams.endianness ||= endianness();
+
 		this.mixerParams = mixerParams;
 
 		this.selfRemoveFunction = selfRemoveFunction;
@@ -41,7 +44,7 @@ export class AudioInput extends Writable {
 		return this.closed ? (this.mixerParams.highWaterMark ?? this.audioData.length) : this.audioData.length;
 	}
 
-	public _write(chunk: Uint8Array, _: BufferEncoding, callback: (error?: Error | undefined) => void): void {
+	public _write(chunk: Uint8Array, _: BufferEncoding, callback: (error?: Error) => void): void {
 		if (!this.closed) {
 			if (this.inputParams.preProcessData) {
 				chunk = this.inputParams.preProcessData(chunk);
@@ -69,7 +72,7 @@ export class AudioInput extends Writable {
 		callback();
 	}
 
-	public _destroy(error: Error, callback: (error?: Error | undefined) => void): void {
+	public _destroy(error: Error, callback: (error?: Error) => void): void {
 		if (!this.closed) {
 			if ((this.audioData.length === 0 && this.correctionBuffer.length === 0) || this.inputParams.forceClose) {
 				this.removeInputSelf();
