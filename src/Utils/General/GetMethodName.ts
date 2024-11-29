@@ -1,5 +1,13 @@
-import {type IntType, type BitDepth} from '../../Types/AudioTypes';
+import {type IntMethodNames, type BitDepth} from '../../Types/AudioTypes';
 
-export function getMethodName(bitDepth: BitDepth, isUnsigned?: boolean): `${IntType}${BitDepth}` {
-	return `${isUnsigned ? 'Uint' : 'Int'}${bitDepth}`;
+import {assertFloat} from '../../Asserts/AssertFloat';
+
+export function getMethodName(bitDepth: BitDepth, unsigned?: boolean, float?: boolean): IntMethodNames {
+	if (float) {
+		assertFloat(bitDepth);
+
+		return 'Float32';
+	}
+
+	return `${unsigned ? 'Uint' : 'Int'}${bitDepth}`;
 }

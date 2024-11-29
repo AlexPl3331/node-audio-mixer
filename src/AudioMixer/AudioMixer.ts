@@ -1,6 +1,7 @@
 import {type MixerParams, type InputParams, type OmitSomeParams} from '../Types/ParamTypes';
 
 import {Readable} from 'stream';
+import {endianness} from 'os';
 
 import {assertHighWaterMark} from '../Asserts/AssertHighWaterMark';
 
@@ -20,6 +21,8 @@ export class AudioMixer extends Readable {
 		super();
 
 		this.mixerParams = params;
+		this.mixerParams.endianness ||= endianness();
+
 		this.audioUtils = new MixerUtils(params);
 
 		if (params.delayTime && typeof params.delayTime === 'number') {

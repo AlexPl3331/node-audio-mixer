@@ -1,6 +1,6 @@
 {
   "name": "node-audio-mixer",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "PCM audio mixer with customizable parameters",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
