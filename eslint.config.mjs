@@ -9,4 +9,11 @@ export default [
 	{ignores: ['node_modules', 'dist', 'eslint.config.mjs']},
 	...tseslint.configs.recommended,
 	...xoTypeScript,
+	{rules: {
+		'@typescript-eslint/no-unsafe-call': 'off',
+		'@typescript-eslint/no-unsafe-argument': 'off',
+		'@typescript-eslint/no-unsafe-assignment': 'off',
+		'@typescript-eslint/no-unsafe-return': 'off',
+		'@typescript-eslint/restrict-plus-operands': 'off',
+	}}
 ];

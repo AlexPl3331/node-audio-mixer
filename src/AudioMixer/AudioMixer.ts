@@ -21,7 +21,7 @@ export class AudioMixer extends Readable {
 		super();
 
 		this.mixerParams = params;
-		this.mixerParams.endianness ||= endianness();
+		this.mixerParams.endianness ??= endianness();
 
 		this.audioUtils = new MixerUtils(params);
 

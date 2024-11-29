@@ -23,7 +23,7 @@ export class AudioInput extends Writable {
 		super();
 
 		this.inputParams = inputParams;
-		this.inputParams.endianness ||= endianness();
+		this.inputParams.endianness ??= endianness();
 
 		this.mixerParams = mixerParams;
 
