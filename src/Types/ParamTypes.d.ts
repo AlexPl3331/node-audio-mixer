@@ -9,6 +9,7 @@ type BasedParams = {
 	bitDepth: BitDepth;
 	endianness?: Endianness;
 	unsigned?: boolean;
+	float?: boolean;
 	volume?: number;
 	preProcessData?: PreProcessFunction;
 };

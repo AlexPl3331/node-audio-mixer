@@ -12,7 +12,9 @@ This class represents an `AudioMixer`. It extends `Readable`. It is used to mix 
 
   - `endianness` {String | Undefined} Output endianness from the `AudioMixer`. <br> Default: `The endianness of your CPU`.
 
-  - `unsigned` {Boolean | Undefined} Output audio must be unsigned.
+  - `unsigned` {Boolean | Undefined} Output audio must be unsigned or not.
+
+  - `float` {Boolean | Undefined} Output audio must be float or not.
 
   - `volume` {Number | Undefined} Output volume from the `AudioMixer`.
 
@@ -26,7 +28,7 @@ This class represents an `AudioMixer`. It extends `Readable`. It is used to mix 
 
   - `silentDuration` {Number | Undefined} Duration in milliseconds of the silent chunk.  
 
-  - `delayTime` {Number | Function} Audio mixing with a delay of n milliseconds. <br> Default: `5ms`.
+  - `delayTime` {Number | Function} Audio mixing with a delay of n milliseconds.
 
 Creates a new `AudioMixer` instance.
 
@@ -65,7 +67,9 @@ console.log(mixer.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, vo
 
   - `endianness` {String | Undefined} Input endianness in the `AudioInput`. <br> Default: `The endianness of your CPU`.
 
-  - `unsigned` {Boolean | Undefined} Input audio is unsigned.
+  - `unsigned` {Boolean | Undefined} Input audio is unsigned or not.
+
+  - `float` {Boolean | Undefined} Input audio is float or not.
 
   - `volume` {Number | Undefined} Input volume in the `AudioInput`.
 

@@ -55,7 +55,7 @@ export class InputUtils implements AudioUtils {
 
 	public checkSampleRate(): this {
 		if (this.changedParams.sampleRate !== this.audioMixerParams.sampleRate) {
-			this.audioData = changeSampleRate(this.audioData, this.changedParams, this.audioMixerParams);
+			this.audioData = changeSampleRate(this.audioData, this.changedParams, this.audioMixerParams.sampleRate);
 		}
 
 		return this;
@@ -65,7 +65,15 @@ export class InputUtils implements AudioUtils {
 		if (this.changedParams.channels !== this.audioMixerParams.channels) {
 			assertChannelsCount(this.changedParams.channels);
 
-			this.audioData = changeChannelsCount(this.audioData, this.changedParams, this.audioMixerParams);
+			this.audioData = changeChannelsCount(this.audioData, this.changedParams, this.audioMixerParams.channels);
+		}
+
+		return this;
+	}
+
+	public checkEndianness(): this {
+		if (this.changedParams.endianness !== this.audioMixerParams.endianness) {
+			changeEndianness(this.audioData, this.changedParams, this.audioMixerParams.endianness);
 		}
 
 		return this;
@@ -76,14 +84,6 @@ export class InputUtils implements AudioUtils {
 
 		if (volume < 100) {
 			changeVolume(this.audioData, this.changedParams);
-		}
-
-		return this;
-	}
-
-	public checkEndianness(): this {
-		if (this.changedParams.endianness !== this.audioMixerParams.endianness) {
-			changeEndianness(this.audioData, this.changedParams, this.audioMixerParams);
 		}
 
 		return this;

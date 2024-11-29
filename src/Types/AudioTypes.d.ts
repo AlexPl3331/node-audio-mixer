@@ -4,8 +4,8 @@ type BitDepth = 8 | 16 | 24 | 32;
 
 type Endianness = 'LE' | 'BE';
 
-type IntType = 'Int' | 'Uint';
+type IntMethodNames = 'Int8' | 'Int16' | 'Int24' | 'Int32' | 'Uint8' | 'Uint16' | 'Uint24' | 'Uint32' | 'Float32';
 
 export type {
-	SampleRate, BitDepth, Endianness, IntType,
+	SampleRate, BitDepth, Endianness, IntMethodNames,
 };
