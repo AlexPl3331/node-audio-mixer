@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-export class ModifiedDataView extends DataView {
+export class ModifiedDataView extends DataView<ArrayBufferLike> {
 	public getInt24(byteOffset: number, littleEndian?: boolean): number {
 		const byte = this.getByte(byteOffset, littleEndian);
 
