@@ -1,12 +1,13 @@
-import {type MixerParams, type InputParams, type OmitSomeParams} from '../Types/ParamTypes';
-
 import {Readable} from 'stream';
 import {endianness} from 'os';
+
+import {type MixerParams, type InputParams, type OmitSomeParams} from '../Types/ParamTypes';
 
 import {assertHighWaterMark} from '../Asserts/AssertHighWaterMark';
 
 import {MixerUtils} from '../Utils/MixerUtils';
 import {AudioInput} from '../AudioInput/AudioInput';
+import {getZeroSample} from '../Utils/General/GetZeroSample';
 
 export class AudioMixer extends Readable {
 	private readonly mixerParams: MixerParams;
@@ -41,10 +42,10 @@ export class AudioMixer extends Readable {
 	}
 
 	_read(): void {
-		assertHighWaterMark(this.params.bitDepth, this.params.highWaterMark);
+		assertHighWaterMark(this.mixerParams.bitDepth, this.mixerParams.highWaterMark);
 
 		const allInputsSize: number[] = this.inputs.map((input: AudioInput) => input.dataSize)
-			.filter(size => size >= (this.params.highWaterMark ?? (this.params.bitDepth / 8)));
+			.filter(size => size >= (this.mixerParams.highWaterMark ?? (this.mixerParams.bitDepth / 8)));
 
 		if (allInputsSize.length > 0) {
 			const minDataSize: number = this.mixerParams.highWaterMark ?? Math.min(...allInputsSize);
@@ -67,8 +68,10 @@ export class AudioMixer extends Readable {
 		}
 
 		if (this.mixerParams.generateSilence) {
-			const silentSize = ((this.mixerParams.sampleRate * this.mixerParams.channels) / 1000) * (this.mixerParams.silentDuration ?? this.delayTimeValue);
+			const silentSize = (((this.mixerParams.sampleRate * this.mixerParams.channels) / 1000) * (this.mixerParams.silentDuration ?? this.delayTimeValue)) * (this.mixerParams.bitDepth / 8);
 			const silentData = new Uint8Array(silentSize);
+
+			silentData.fill(getZeroSample(this.mixerParams.bitDepth, this.mixerParams.unsigned));
 
 			this.unshift(silentData);
 		}
