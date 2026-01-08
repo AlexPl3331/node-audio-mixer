@@ -186,15 +186,13 @@ export class AudioInput extends Writable {
 		const tempChunk = new Uint8Array(size)
 			.fill(zeroSample);
 
-		if ((this.audioData.length < size && this.closed) || this.audioData.length >= size) {
-			tempChunk.set(this.audioData.slice(0, size));
+		const sliceEndPos = Math.min(this.audioData.length, size);
 
-			this.audioData = this.audioData.slice(size);
-		}
+		tempChunk.set(this.audioData.slice(0, sliceEndPos));
+		this.audioData = this.audioData.slice(sliceEndPos);
 
-		if (this.audioData.length === 0 && this.closed) {
+		if (this.audioData.length === 0 && this.destroyed)
 			this.removeInputSelf();
-		}
 
 		return tempChunk;
 	}
