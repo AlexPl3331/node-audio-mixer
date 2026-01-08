@@ -166,12 +166,12 @@ export class AudioInput extends Writable {
 	}
 
 	/**
-	 * Returns the available size of `audioData` or `mixerParams.highWaterMark` if it's set.
+	 * Returns the available size of `audioData`.
 	 *
-	 * @returns `audioData.length` or `mixerParams.highWaterMark`
+	 * @returns `audioData.length`
 	 */
 	public get dataSize(): number {
-		return this.closed ? (this.mixerParams.highWaterMark ?? this.audioData.length) : this.audioData.length;
+		return this.audioData.length;
 	}
 
 	/**
