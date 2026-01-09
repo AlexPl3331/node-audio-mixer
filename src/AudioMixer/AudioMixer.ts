@@ -18,8 +18,8 @@ import {getZeroSample} from '../Utils/General/GetZeroSample';
  *
  * Extends {@link Readable}
  *
- * @emits "createInput" - When new {@link AudioInput} is created.
- * @emits "removeInput" - When {@link AudioInput} is removed.
+ * @emits "createInput" - When new {@link AudioInput} is created. Emits the input name.
+ * @emits "removeInput" - When {@link AudioInput} is removed. Emits the input name.
  */
 export class AudioMixer extends Readable {
 	private readonly mixerParams: MixerParams;
@@ -194,7 +194,7 @@ export class AudioMixer extends Readable {
 		this.inputs.push(audioInput);
 		this.isWork ||= true;
 
-		this.emit('createInput');
+		this.emit('createInput', audioInput.params.name);
 
 		return audioInput;
 	}
@@ -216,8 +216,7 @@ export class AudioMixer extends Readable {
 
 		if (findAudioInput !== -1) {
 			this.inputs.splice(findAudioInput, 1);
-
-			this.emit('removeInput');
+			this.emit('removeInput', audioInput.params.name);
 
 			return true;
 		}

@@ -18,6 +18,8 @@ type SelfRemoveFunction = (audioInput: AudioInput) => void;
  * Extends {@link Writable}
  */
 export class AudioInput extends Writable {
+	private static count: number = 0;
+
 	private readonly inputParams: InputParams;
 	private readonly mixerParams: MixerParams;
 
@@ -71,6 +73,7 @@ export class AudioInput extends Writable {
 
 		this.inputParams = inputParams;
 		this.inputParams.endianness ??= endianness();
+		this.inputParams.name ??= `input-${++AudioInput.count}`;
 
 		this.mixerParams = mixerParams;
 
