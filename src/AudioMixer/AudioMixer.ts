@@ -152,11 +152,9 @@ export class AudioMixer extends Readable {
 	 * @param callback
 	 */
 	_destroy(error: Error, callback: (error?: Error) => void): void {
-		if (!this.closed) {
 			this.inputs.forEach((input: AudioInput) => {
 				input.destroy();
 			});
-		}
 
 		callback(error);
 	}
@@ -233,7 +231,7 @@ export class AudioMixer extends Readable {
 	 * Calls `_read()` when {@link AudioMixer} is not paused
 	 */
 	private loopRead(): void {
-		if (!this.closed || this.inputs.length > 0) {
+		if (!this.destroyed || this.inputs.length > 0) {
 			if (!this.isPaused()) {
 				this._read();
 

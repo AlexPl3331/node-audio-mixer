@@ -114,7 +114,7 @@ export class AudioInput extends Writable {
 	 * @param callback
 	 */
 	_write(chunk: Uint8Array, _: BufferEncoding, callback: (error?: Error) => void): void {
-		if (!this.closed) {
+		if (!this.destroyed) {
 			if (this.inputParams.preProcessData) {
 				chunk = this.inputParams.preProcessData(chunk);
 			}
@@ -150,7 +150,6 @@ export class AudioInput extends Writable {
 	 * @param callback
 	 */
 	_destroy(error: Error, callback: (error?: Error) => void): void {
-		if (!this.closed) {
 			if ((this.audioData.length === 0 && this.correctionBuffer.length === 0) || this.inputParams.forceClose) {
 				this.removeInputSelf();
 
@@ -160,7 +159,6 @@ export class AudioInput extends Writable {
 			if (this.correctionBuffer.length > 0) {
 				this.audioData = this.correctByteSize(this.correctionBuffer, true);
 			}
-		}
 
 		callback(error);
 	}
