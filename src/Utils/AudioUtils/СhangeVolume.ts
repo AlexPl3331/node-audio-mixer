@@ -7,25 +7,29 @@ import {getMethodName} from '../General/GetMethodName';
 import {getValueRange} from '../General/GetValueRange';
 
 export function changeVolume(audioData: ModifiedDataView, params: InputParams | MixerParams): void {
-	const bytesPerElement = params.bitDepth / 8;
-	const volume = params.volume! / 100;
+	const volume = Math.abs(params.volume ?? 100) / 100;
 
-	const isLe = isLittleEndian(params.endianness);
+	if(volume != 1) {
+		const bytesPerElement = params.bitDepth / 8;
+		const isLe = isLittleEndian(params.endianness);
 
-	const valueRange = getValueRange(params.bitDepth, false, params.float);
+		const valueRange = getValueRange(params.bitDepth, false, params.float);
 
-	const getSampleMethod: `get${IntMethodNames}` = `get${getMethodName(params.bitDepth, params.unsigned, params.float)}`;
-	const setSampleMethod: `set${IntMethodNames}` = `set${getMethodName(params.bitDepth, params.unsigned, params.float)}`;
+		const getSampleMethod: `get${IntMethodNames}` = `get${getMethodName(params.bitDepth, params.unsigned, params.float)}`;
+		const setSampleMethod: `set${IntMethodNames}` = `set${getMethodName(params.bitDepth, params.unsigned, params.float)}`;
 
-	for (let index = 0; index < audioData.byteLength; index += bytesPerElement) {
-		const sample = audioData[getSampleMethod](index, isLe);
+		for (let index = 0; index < audioData.byteLength; index += bytesPerElement) {
+			const sample = audioData[getSampleMethod](index, isLe);
 
-		const volumedSample = params.unsigned
-			? ((sample - valueRange.max) * volume) + valueRange.max
-			: sample * volume;
+			let volumedSample = params.unsigned
+				? ((sample - valueRange.max) * volume) + valueRange.max
+				: sample * volume;
 
-		audioData[setSampleMethod](index, volumedSample, isLe);
+			volumedSample = Math.min(Math.max(volumedSample, valueRange.min), valueRange.max);;
+
+			audioData[setSampleMethod](index, volumedSample, isLe);
+		}
+
+		params.volume = 100;
 	}
-
-	params.volume = 100;
 }
