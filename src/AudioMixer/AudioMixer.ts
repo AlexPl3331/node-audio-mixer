@@ -152,9 +152,9 @@ export class AudioMixer extends Readable {
 	 * @param callback
 	 */
 	_destroy(error: Error, callback: (error?: Error) => void): void {
-			this.inputs.forEach((input: AudioInput) => {
-				input.destroy();
-			});
+		this.inputs.forEach((input: AudioInput) => {
+			input.destroy();
+		});
 
 		callback(error);
 	}

@@ -18,7 +18,7 @@ type SelfRemoveFunction = (audioInput: AudioInput) => void;
  * Extends {@link Writable}
  */
 export class AudioInput extends Writable {
-	private static count: number = 0;
+	private static count = 0;
 
 	private readonly inputParams: InputParams;
 	private readonly mixerParams: MixerParams;
@@ -153,15 +153,15 @@ export class AudioInput extends Writable {
 	 * @param callback
 	 */
 	_destroy(error: Error, callback: (error?: Error) => void): void {
-			if ((this.audioData.length === 0 && this.correctionBuffer.length === 0) || this.inputParams.forceClose) {
-				this.removeInputSelf();
+		if ((this.audioData.length === 0 && this.correctionBuffer.length === 0) || this.inputParams.forceClose) {
+			this.removeInputSelf();
 
-				return;
-			}
+			return;
+		}
 
-			if (this.correctionBuffer.length > 0) {
-				this.audioData = this.correctByteSize(this.correctionBuffer, true);
-			}
+		if (this.correctionBuffer.length > 0) {
+			this.audioData = this.correctByteSize(this.correctionBuffer, true);
+		}
 
 		callback(error);
 	}
@@ -192,8 +192,9 @@ export class AudioInput extends Writable {
 		tempChunk.set(this.audioData.slice(0, sliceEndPos));
 		this.audioData = this.audioData.slice(sliceEndPos);
 
-		if (this.audioData.length === 0 && this.destroyed)
+		if (this.audioData.length === 0 && this.destroyed) {
 			this.removeInputSelf();
+		}
 
 		return tempChunk;
 	}

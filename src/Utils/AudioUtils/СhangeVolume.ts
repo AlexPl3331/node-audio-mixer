@@ -9,7 +9,7 @@ import {getValueRange} from '../General/GetValueRange';
 export function changeVolume(audioData: ModifiedDataView, params: InputParams | MixerParams): void {
 	const volume = Math.abs(params.volume ?? 100) / 100;
 
-	if(volume != 1) {
+	if (volume !== 1) {
 		const bytesPerElement = params.bitDepth / 8;
 		const isLe = isLittleEndian(params.endianness);
 
@@ -25,7 +25,7 @@ export function changeVolume(audioData: ModifiedDataView, params: InputParams | 
 				? ((sample - valueRange.max) * volume) + valueRange.max
 				: sample * volume;
 
-			volumedSample = Math.min(Math.max(volumedSample, valueRange.min), valueRange.max);;
+			volumedSample = Math.min(Math.max(volumedSample, valueRange.min), valueRange.max);
 
 			audioData[setSampleMethod](index, volumedSample, isLe);
 		}
