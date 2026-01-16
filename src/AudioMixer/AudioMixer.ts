@@ -138,7 +138,7 @@ export class AudioMixer extends Readable {
 
 		if (this.isWork) {
 			if (this.inputs.length === 0 && this.mixerParams.autoClose) {
-				this.destroy();
+				this.unshift(null);
 			}
 		}
 	}
@@ -242,10 +242,6 @@ export class AudioMixer extends Readable {
 			}
 
 			setTimeout(this.loopRead.bind(this), this.delayTimeValue);
-
-			return;
 		}
-
-		this.unshift(null);
 	}
 }
