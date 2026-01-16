@@ -16,7 +16,7 @@ import {getZeroSample} from '../Utils/General/GetZeroSample';
  * Represents a class that gathers audio frames from all {@link AudioInput}
  * and mixes them up into one audio frame with specified params.
  *
- * Extends {@link Readable}
+ * Extends {@link Readable}.
  *
  * @emits "createInput" - When new {@link AudioInput} is created. Emits the input name.
  * @emits "removeInput" - When {@link AudioInput} is removed. Emits the input name.
@@ -33,7 +33,7 @@ export class AudioMixer extends Readable {
 	/**
 	 * Creates an `AudioMixer` instance.
 	 *
-	 * @param params {@link MixerParams} configuration.
+	 * @param {MixerParams} params {@link MixerParams} configuration.
 	 * @param {SampleRate} [params.sampleRate] Output {@link SampleRate}.
 	 * @param {Number} [params.channels] Number of output channels.
 	 * @param {BitDepth} [params.bitDepth] Output {@link BitDepth}.
@@ -43,16 +43,16 @@ export class AudioMixer extends Readable {
 	 * @param {Number | undefined} [params.volume] Output volume.
 	 * @param {Function | undefined} [params.preProcessData] Processes the audio frame before it leaves the `AudioMixer`.
 	 * @param {Number | undefined} [params.highWaterMark] Output audio frame size.
-	 * @param {Boolean | undefined} [params.autoClose] Automatically closes the `AudioMixer` when all {@link AudioInput} are closed.
-	 * @param {Boolean | undefined} [params.generateSilent] Generates silent audio frames when there are no {@link AudioInput} or when they are empty.
+	 * @param {Boolean | undefined} [params.autoClose] Automatically closes the `AudioMixer` when all {@link AudioInput | AudioInputs} are closed.
+	 * @param {Boolean | undefined} [params.generateSilent] Generates silent audio frames when there are no {@link AudioInput | AudioInputs} or when they are empty.
 	 * @param {Number | undefined} [params.silentDuration] Duration of silent audio frame (in ms).
 	 * @param {Number | Function} [params.delayTime] Mix audio frames with delay (in ms).
  	 *
 	 * @example
 	 * const mixer = new AudioMixer({
-	 * sampleRate: 48000,
-	 * channels: 1,
-	 * bitDepth: 16,
+	 *   sampleRate: 48000,
+	 *   channels: 1,
+	 *   bitDepth: 16,
 	 * });
 	 */
 	constructor(params: MixerParams) {
@@ -80,8 +80,8 @@ export class AudioMixer extends Readable {
 	 *
 	 * // Assign new params to the mixer
 	 * mixer.params = {
-	 * volume: 50,
-	 * autoClose: true,
+	 *   volume: 50,
+	 *   autoClose: true,
 	 * };
 	 *
 	 * // Read it again
@@ -98,7 +98,7 @@ export class AudioMixer extends Readable {
 	/**
 	 * @protected
 	 *
-	 * Gather all audio frames from {@link AudioInput}
+	 * Gather all audio frames from {@link AudioInput | AudioInputs}
 	 * and mix them up into one audio frame.
 	 */
 	_read(): void {
@@ -146,7 +146,7 @@ export class AudioMixer extends Readable {
 	/**
 	 * @protected
 	 *
-	 * Destroy all {@link AudioInput}s when "destroy()" is called in `AudioMixer`.
+	 * Destroys all {@link AudioInput | AudioInputs} when "destroy()" is called in `AudioMixer`.
 	 *
 	 * @param error
 	 * @param callback
@@ -162,31 +162,33 @@ export class AudioMixer extends Readable {
 	/**
 	 * Creates a new {@link AudioInput} instance and adds it to the {@link AudioMixer}.
 	 *
-	 * @param inputParams
-	 * @returns {AudioInput}
+	 * @param {InputParams} inputParams {@link InputParams} configuration.
+	 * @returns {AudioInput} A new {@link AudioInput} instance.
 	 *
 	 * @example
 	 * // Create AudioInput through the AudioMixer
 	 * const firstInput = mixer.createAudioInput({
-	 *		sampleRate: 48000,
-	 *		channels: 1,
-	 *		bitDepth: 16,
-	 *		volume: 90,
+	 *	   sampleRate: 48000,
+	 *	   channels: 1,
+	 *	   bitDepth: 16,
+	 *	   volume: 90,
 	 * });
 	 *
 	 * // Or you can create standalone instance of AudioInput
-	 * const secondInput = new AudioInput({
-	 *		sampleRate: 48000,
-	 *		channels: 1,
-	 *		bitDepth: 16,
-	 *		volume: 90,
-	 * },
-	 * {
-	 *		sampleRate: 48000,
-	 *		channels: 1,
-	 *		bitDepth: 16,
-	 *		volume: 90,
-	 * });
+	 * const secondInput = new AudioInput(
+	 *   {
+	 *	    sampleRate: 48000,
+	 *	    channels: 1,
+	 *	    bitDepth: 16,
+	 *	    volume: 90,
+	 *   },
+	 *   {
+	 *	    sampleRate: 48000,
+	 *	    channels: 1,
+	 *	    bitDepth: 16,
+	 *	    volume: 90,
+	 *   }
+	 * );
 	 */
 	public createAudioInput(inputParams: InputParams): AudioInput {
 		const audioInput = new AudioInput(inputParams, this.mixerParams, this.removeAudioinput.bind(this));
@@ -202,7 +204,7 @@ export class AudioMixer extends Readable {
 	/**
 	 * Removes an {@link AudioInput} from the {@link AudioMixer} if it exists.
 	 * @param audioInput {@link AudioInput} instance.
-	 * @returns {boolean} true or false
+	 * @returns {Boolean} true or false
 	 *
 	 * @example
 	 * // Removing the first AudioInput

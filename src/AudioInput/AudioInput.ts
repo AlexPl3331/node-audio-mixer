@@ -15,7 +15,7 @@ type SelfRemoveFunction = (audioInput: AudioInput) => void;
  * Represents a class that receives audio frames and
  * gives them to `AudioMixer` when `getData` is called.
  *
- * Extends {@link Writable}
+ * Extends {@link Writable}.
  */
 export class AudioInput extends Writable {
 	private static count = 0;
@@ -31,7 +31,7 @@ export class AudioInput extends Writable {
 	private correctionBuffer: Uint8Array = new Uint8Array(0);
 
 	/**
-	 * Creates an `AudioInput` instance.
+	 * Creates a new `AudioInput` instance.
 	 *
 	 * @param inputParams {@link InputParams} configuration.
 	 * @param {SampleRate} [inputParams.sampleRate] Input {@link SampleRate}.
@@ -50,23 +50,24 @@ export class AudioInput extends Writable {
 	 *
 	 * @example
 	 * const firstInput = mixer.createAudioInput({
-	 * 		sampleRate: 48000,
-	 * 		channles: 1,
-	 * 		bitDepth: 16,
+	 *     sampleRate: 48000,
+	 *     channles: 1,
+	 *     bitDepth: 16,
 	 * });
 	 *
 	 * // Or you can create a standalone AudioInput
-	 *
-	 * const standaloneInput = new AudioInput({
-	 * 		sampleRate: 48000,
-	 * 		channles: 1,
-	 * 		bitDepth: 16,
-	 * },
-	 * {
-	 * 		sampleRate: 48000,
-	 * 		channles: 1,
-	 * 		bitDepth: 16,
-	 * });
+	 * const standaloneInput = new AudioInput(
+	 *   {
+	 *     sampleRate: 48000,
+	 *     channles: 1,
+	 *     bitDepth: 16,
+	 *   },
+	 *   {
+	 *     sampleRate: 48000,
+	 *     channles: 1,
+	 *     bitDepth: 16,
+	 *   }
+	 *);
 	 */
 	constructor(inputParams: InputParams, mixerParams: MixerParams, selfRemoveFunction?: SelfRemoveFunction) {
 		super();
@@ -92,8 +93,8 @@ export class AudioInput extends Writable {
 	 *
 	 * // Assign new params to the firstInput
 	 * firstInput.params = {
-	 * volume: 50,
-	 * forceClose: true,
+	 *   volume: 50,
+	 *   forceClose: true,
 	 * };
 	 *
 	 * // Read it again
@@ -147,7 +148,7 @@ export class AudioInput extends Writable {
 	/**
 	 * @protected
 	 *
-	 * Removes itself if `audioData` is empty or `forceClose` is set.
+	 * Removes itself from the `AudioMixer` if the buffer is empty or `forceClose` is set.
 	 *
 	 * @param error
 	 * @param callback
@@ -167,9 +168,9 @@ export class AudioInput extends Writable {
 	}
 
 	/**
-	 * Returns the available size of `audioData`.
+	 * Returns the buffer size.
 	 *
-	 * @returns `audioData.length`
+	 * @returns {Number} Buffer size.
 	 */
 	public get dataSize(): number {
 		return this.audioData.length;
@@ -178,8 +179,8 @@ export class AudioInput extends Writable {
 	/**
 	 * Returns an audio frame with a given size.
 	 *
-	 * @param size Audio frame size
-	 * @returns {Uint8Array}
+	 * @param size Audio frame size.
+	 * @returns {Uint8Array} An audio frame with given size.
 	 */
 	public getData(size: number): Uint8Array {
 		const zeroSample = getZeroSample(this.inputParams.bitDepth, this.inputParams.unsigned);
