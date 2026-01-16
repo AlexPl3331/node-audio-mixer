@@ -1,165 +1,130 @@
 ## Class: AudioMixer
-This class represents an `AudioMixer`. It extends `Readable`. It is used to mix multiple `AudioInputs` into a single audio output with specified properties.
+Represents a class that gathers audio frames from all [AudioInput](AudioInput.md#class-audioinput)
+and mixes them up into one audio frame with specified params.
+
+Extends `Readable`.
 
 ### new AudioMixer(mixerParams)
-- `mixerParams` {Object}
-
-  - `sampleRate` {Number} Output sample rate from the `AudioMixer`.
-
-  - `channels` {Number} Number of output channels from the `AudioMixer`.
-
-  - `bitDepth` {Number} Output bit depth from the `AudioMixer`.
-
-  - `endianness` {String | Undefined} Output endianness from the `AudioMixer`. <br> Default: `The endianness of your CPU`.
-
-  - `unsigned` {Boolean | Undefined} Output audio must be unsigned or not.
-
-  - `float` {Boolean | Undefined} Output audio must be float or not.
-
-  - `volume` {Number | Undefined} Output volume from the `AudioMixer`.
-
-  - `preProcessData` {Function | Undefined} Process the chunk before returning it from the `AudioMixer`.
-
-  - `highWaterMark` {Number | Undefined} Chunk output size from the AudioMixer.
-
-  - `autoClose` {Boolean | Undefined} Automatically closes after all `AudioInputs` are closed.
-
-  - `generateSilent` {Boolean | Undefined} Generates silent chunks when there are no `AudioInputs` or when all `AudioInputs` are empty.
-
-  - `silentDuration` {Number | Undefined} Duration in milliseconds of the silent chunk.  
-
-  - `delayTime` {Number | Function} Audio mixing with a delay of n milliseconds.
-
 Creates a new `AudioMixer` instance.
 
-```js
+- `params` {[MixerParams](../../../src/Types/ParamTypes.ts#L17)} `MixerParams` configuration.
+  - `sampleRate` {[SampleRate](../../../src/Types/AudioTypes.ts#L1)} Output sample rate.
+  - `channels` {Number} Number of output channels.
+  - `bitDepth` {[BitDepth](../../../src/Types/AudioTypes.ts#L3)} Output bit depth.
+  - `endianness` {[Endianness](../../../src/Types/AudioTypes.ts#L5)} Output endianness. Default: `The endianness of your CPU`.
+  - `unsigned` {Boolean | undefined} Output audio must be unsigned or not.
+  - `float` {Boolean | undefined} Output audio must be float or not. Cannot be enabled with `unsigned`.
+  - `volume` {Number | undefined} Output volume.
+  - `preProcessData` {Function | undefined} Processes the audio frame before it leaves the `AudioMixer`.
+  - `highWaterMark` {Number | undefined} Output audio frame size.
+  - `autoClose` {Boolean | undefined} Automatically destroys the `AudioMixer` when all [AudioInputs](AudioInput.md#class-audioinput) are closed.
+  - `generateSilent` {Boolean | undefined} Generates silent audio frames when there are no [AudioInputs](AudioInput.md#class-audioinput) or when they are empty.
+  - `silentDuration` {Number | undefined} Duration of silent audio frame (in ms).
+  - `delayTime` {Number | Function} Mix audio frames with delay (in ms).
+
+**Example:**
+```typescript
 const mixer = new AudioMixer({
-    sampleRate: 48000,
-    channels: 1,
-    bitDepth: 16,
+	sampleRate: 48000,
+	channels: 1,
+	bitDepth: 16,
 });
 ```
 
 ### AudioMixer.params
-Getter: Returns an object of `mixerParams`.
+Reading returns an immutable [MixerParams](../../../src/Types/ParamTypes.ts#L17) object.
+Assigning updates the [AudioMixer](#class-audiomixer) params.
 
-Setter: Sets the parameters using an object of `mixerParams`.
+**Example:**
+```typescript
+// read params from mixer
+console.log(mixer.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, endianness: "LE" }
 
-```js
-console.log(mixer.params); // { sampleRate: 48000, channels: 1, bitDepth: 16 }
-
+// Assign new params to the mixer
 mixer.params = {
-    volume: 50,
-    autoClose: true,
+  volume: 50,
+  autoClose: true,
 };
 
-console.log(mixer.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, volume: 50, autoClose: true }
+// Read it again
+console.log(mixer.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, endianness: "LE" volume: 50, autoClose: true }
 ```
 
 ### AudioMixer.createAudioInput(inputParams)
-- `inputParams` {Object}
+Creates a new [AudioInput](AudioInput.md#class-audioinput) instance and adds it to the [AudioMixer](#class-audiomixer).
 
-  - `sampleRate` {Number} Input sample rate in the `AudioInput`.
+- `inputParams` {[InputParams](../../../src/Types/ParamTypes.ts#L25)} `InputParams` configuration.
 
-  - `channels` {Number} Number of input channels in the `AudioInput`.
+**Returns:** {[AudioInput](AudioInput.md#class-audioinput)} A new `AudioInput` instance.
 
-  - `bitDepth` {Number} Input bit depth in the `AudioInput`.
-
-  - `endianness` {String | Undefined} Input endianness in the `AudioInput`. <br> Default: `The endianness of your CPU`.
-
-  - `unsigned` {Boolean | Undefined} Input audio is unsigned or not.
-
-  - `float` {Boolean | Undefined} Input audio is float or not.
-
-  - `volume` {Number | Undefined} Input volume in the `AudioInput`.
-
-  - `preProcessData` {Function | Undefined} Process the chunk before returning it to AudioMixer.
-
-  - `forceClose` {Boolean | Undefined} Closes `AudioInput` even when it contains data.
-
-  - `correctByteSize` {Boolean | Undefined} - Trims buffer if it's size is incorrect. If disabled, the entire buffer is discarded.
-
-Creates a new `AudioInput` instance and add it to the `AudioMixer`.
-
-```js
-// Create AudioInput through AudioMixer
+**Example:**
+```typescript
 const firstInput = mixer.createAudioInput({
-    sampleRate: 48000,
-    channels: 1,
-    bitDepth: 16,
-    volume: 90,
+	sampleRate: 48000,
+	channels: 1,
+	bitDepth: 16,
+	volume: 90,
 });
 
-// Or create standalone instance of AudioInput
-const secondInput = new AudioInput({
-    sampleRate: 48000,
-    channels: 1,
-    bitDepth: 16,
-    volume: 90,
-},
-{
-    sampleRate: 48000,
-    channels: 1,
-    bitDepth: 16,
-    volume: 90,
-});
+// Or you can create a standalone AudioInput
+const secondInput = new AudioInput(
+	{
+		sampleRate: 48000,
+		channels: 1,
+		bitDepth: 16,
+		volume: 90,
+	},
+	{
+		sampleRate: 48000,
+		channels: 1,
+		bitDepth: 16,
+		volume: 90,
+	},
+);
 ```
 
 ### AudioMixer.removeAudioInput(audioInput)
 - `audioInput` {AudioInput}
 
-Removes an `AudioInput` from the `AudioMixer` if it exists.
+Removes an [AudioInput](AudioInput.md#class-audioinput) from the [AudioMixer](#class-audiomixer) if it exists.
 
-```js
+**Returns:** {Boolean} true or false
+
+**Example:**
+```typescript
 // Removing the first AudioInput
 console.log(mixer.removeAudioInput(firstInput)); // true
 
-// Attempt to remove a second AudioInput that does not exist
-console.log(mixer.removeAudioInput(secondInput)); // false
+// Attempt to remove the same AudioInput
+console.log(mixer.removeAudioInput(firstInput)); // false
 ```
 
 ### AudioMixer.destroy()
-Destroys the `AudioMixer` and all `AudioInputs`.
+Destroys the [AudioMixer](#class-audiomixer) and all [AudioInputs](AudioInput.md#class-audioinput).
 
-```js
+**Example:**
+```typescript
 mixer.destroy();
 ```
-
 
 ## Events: AudioMixer
 
 ### Event 'createInput'
-Emitted when the `AudioInput` is created in `AudioMixer`.
+Emitted when an [AudioInput](AudioInput.md#class-audioinput) is created in the [AudioMixer](#class-audiomixer).
+- `name` {String} The name of the created `AudioInput`.
 
-```js
-mixer.on('createInput', () => {
-  console.log('AudioInput has been created');
+```typescript
+mixer.on('createInput', (name: string) => {
+  console.log(`AudioInput "${name}" has been removed.`);
 })
 ```
 
 ### Event 'removeInput'
-Emitted when the `AudioInput` is removed from the `AudioMixer`.
+Emitted when the [AudioInput](AudioInput.md#class-audioinput) is removed from the [AudioMixer](#class-audiomixer).
+- `name` {String} The name of the removed `AudioInput`.
 
-```js
-mixer.on('removeInput', () => {
-  console.log('AudioInput has been removed');
-})
-```
-
-### Event 'end'
-Emitted when the `AudioMixer` is destroyed.
-
-```js
-mixer.on('end', () => {
-  console.log('AudioMixer has finished its work');
-})
-```
-
-### Event 'close'
-Emitted after `end` when all `AudioInputs` are closed and if `autoClose` is enabled.
-
-```js
-mixer.on('close', () => {
-  console.log('AudioMixer has closed');
+```typescript
+mixer.on('removeInput', (name: string) => {
+  console.log(`AudioInput "${name}" has been removed.`);
 })
 ```

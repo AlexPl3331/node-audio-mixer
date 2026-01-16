@@ -25,147 +25,126 @@
 
 
 ## Class: AudioMixer
-This class represents an `AudioMixer`. It extends `Readable`.
+Represents a class that gathers audio frames from all [AudioInput](#class-audioinput)
+and mixes them up into one audio frame with specified params.
+
+Extends `Readable`.
 
 ### new AudioMixer(mixerArgs)
-- `mixerArgs` {Object}
-  - `sampleRate` {Number} Output sample rate from the `AudioMixer`. <br> Default: `48000`.
-
-  - `channels` {Number} Number of output channels from the `AudioMixer`. <br> Default: `1`.
-
-  - `volume` {Number} Output volume from the `AudioMixer`. <br> Default: `100`.
-
-  - `bitDepth` {Number} Output bit depth from the `AudioMixer`. <br> Default: `16`.
-
-  - `endianness` {String} Output endianness from the `AudioMixer`. <br> Default: `The endianness of your CPU`.
-
-  - `highWaterMark` {Number | Null} Chunk output size from the `AudioMixer`. <br> Default: `null`.
-
-  - `generateSilent` {Boolean} Generate silent chunk when there are no `AudioInput` or they are empty. <br> Default: `false`.
-
-  - `silentDuration` {Number | Null} Duration in milliseconds of the silent chunk. <br> Default: `null`.  
-
-  - `preProcessData` {Function} Process the chunk before returning it from `AudioMixer`. <br> Default: `Returns the same audio chunk`.
-
-  - `delayTime` {Number | Function} Audio mixing with a delay of n milliseconds. <br> Default: `1`.
-
-  - `autoClose` {Boolean} Automatically closes after all `AudioInput` are closed. <br> Default: `false`.
-
 Creates a new `AudioMixer` instance.
+
+- `mixerArgs` {Object} `mixerArgs` configuration.
+  - `sampleRate` {Number} Output sample rate. <br> Default: `48000`.
+  - `channels` {Number} Number of output channels <br> Default: `1`.
+  - `volume` {Number} Output volume. <br> Default: `100`.
+  - `bitDepth` {Number} Output bit depth. <br> Default: `16`.
+  - `endianness` {String} Output endianness. <br> Default: `The endianness of your CPU`.
+  - `highWaterMark` {Number | Null} Output audio frame size. <br> Default: `null`.
+  - `generateSilent` {Boolean} Generates silent audio frames when there are no [AudioInputs](#class-audioinput) or they are empty. <br> Default: `false`.
+  - `silentDuration` {Number | Null} Duration of silent audio frame (in ms). <br> Default: `null`.  
+  - `preProcessData` {Function} Processes the audio frame before it leaves the `AudioMixer`. <br> Default: `Passes the audio frame unchanged`.
+  - `delayTime` {Number | Function} Mix audio frames with delay (in ms). <br> Default: `1`.
+  - `autoClose` {Boolean} Automatically destroys the `AudioMixer` when all [AudioInputs](AudioInput.md#class-audioinput) are closed. <br> Default: `false`.
+
 
 ### mixer.getOptions()
 Returns a copy of the object [audioMixerArgs](#new-audiomixermixerargs).
 
 ### mixer.createAudioInput(inputArgs)
-- `inputArgs` {Object}
-
-  - `sampleRate` {Number} Input sample rate in the `AudioInput`. <br> Default: `48000`.
-
-  - `channels` {Number} Number of input channels in the `AudioInput`. <br> Default: `1`.
-
-  - `volume` {Number} Input volume in the `AudioInput`. <br> Default: `100`.
-
-  - `bitDepth` {Number} Input bit depth in the `AudioInput`. <br> Default: `16`.
-
-  - `endianness` {String} Input endianness in the `AudioInput`. <br> Default: `The endianness of your CPU`.
-
-  - `fillChunk` {Boolean} Fill the chunk with zeroes when it's size is less than the `highWaterMark`. <br> Default: `false`.
-
-  - `preProcessData` {Function} Process the chunk before returning it to `AudioMixer`. <br> Default: `Returns the same audio chunk`.
-
-  - `forceClose` {Boolean} Closes `AudioInput` even when it contains data <br> Default: `false`.
-
 Create a new `AudioInput` instance and add it to the `AudioMixer`.
 
+- `inputArgs` {Object}
+  - `sampleRate` {Number} Input sample rate. <br> Default: `48000`.
+  - `channels` {Number} Number of input channels. <br> Default: `1`.
+  - `volume` {Number} Input volume. <br> Default: `100`.
+  - `bitDepth` {Number} Input bit depth. <br> Default: `16`.
+  - `endianness` {String} Input endianness. <br> Default: `The endianness of your CPU`.
+  - `fillChunk` {Boolean} Fill the chunk with zeroes when it's size is less than the `highWaterMark`. <br> Default: `false`.
+  - `preProcessData` {Function} Processes the audio frame before it's be stored in the `AudioInput`. <br> Default: `Passes the audio frame unchanged`.
+  - `forceClose` {Boolean}Closes the `AudioInput` and discards all audio frames from buffer. <br> Default: `false`.
+
+
 ### mixer.removeAudioInput(audioInput)
+Removes an [AudioInput](#class-audioinput) from the `AudioMixer` if it exists.
+
 - `audioInput` {AudioInput}
 
-Removes an `AudioInput` from the `AudioMixer` if it exists.
-
 ### mixer.setVolume(volume)
+Sets the output volume for the `AudioMixer`.
+
 - `volume` {Number}
 
-Sets the volume of the `AudioMixer`.
-
 ### mixer.setHighWaterMark(highWaterMark)
+Sets a new value for `highWaterMark`.
+
 - `highWaterMark` {Number | null}
 
-Sets an new value for `highWaterMark`.
-
 ### mixer.setGenerateSilent(generateSilent)
+Sets a new value for `generateSilent`.
+
 - `generateSilent` {Boolean}
 
-Sets an new value for `generateSilent`.
-
 ### mixer.setSilentDuration(silentDuration)
-- `silentDuration` {Number | Null}
-
-Sets an new value for `silentDuration`.
-
+Sets a new value for `silentDuration`.
 > Note: If you set the value to `null`, it will be replaced by the `delayTime`.
 
+- `silentDuration` {Number | Null}
+
 ### mixer.setPreProcessData(preProcessData)
+Sets a new value for `preProcessData`.
+
 - `preProcessData` {Function}
 
-Sets an new value for `preProcessData`.
-
 ### mixer.setDelayTime(delayTime)
+Sets a new value for `delayTime`.
+
 - `delayTime` {Number}
 
-Sets an new value for `delayTime`.
-
 ### mixer.setAutoClose(autoClose)
+Sets a new value for `autoClose`.
+
 - `autoClose` {Boolean}
 
-Sets an new value for `autoClose`.
-
 ### mixer.close()
-Closes the `AudioInputs` and the `AudioMixer`.
+Closes the [AudioMixer](#class-audiomixer) and all [AudioInputs](#class-audioinput).
 
 
 ## Events: AudioMixer
 
 ### Event 'addInput'
-Emitted when you use `createAudioInput` in the `AudioMixer`.
+Emitted when you use [AudioMixer.createAudioInput()](#mixercreateaudioinputinputargs).
 
 ### Event 'removeInput'
-Emitted when an `AudioInput` has been removed.
-> Note: Better use this event when `forceClose` is set to `false` in `AudioInput`, instead of using `close` or `end`.
+Emitted when an [AudioInput](#class-audioinput) has been removed.
 
 
 ## Class: AudioInput
 This class represents an `AudioInput`. It extends `Writable`.
 
 ### new AudioInput(inputArgs, mixerArgs, removeFunction)
- - `inputArgs` {[AudioInputArgs](#mixercreateaudioinputinputargs)} `AudioInput` arguments.
-  
- - `mixerArgs` {[AudioMixerArgs](#new-audiomixermixerargs)} `AudioMixer` arguments.
-  
- - `removeFunction` {Function} Function to remove an `AudioInput` from the `AudioMixer`.
-
 Creates a new `AudioInput` instance.
+
+ - `inputArgs` {[AudioInputArgs](#mixercreateaudioinputinputargs)} `AudioInput` arguments.
+ - `mixerArgs` {[AudioMixerArgs](#new-audiomixermixerargs)} `AudioMixer` arguments.
+ - `removeFunction` {Function} Function to remove an `AudioInput` from the `AudioMixer`.
 
 ### input.getOptions()
 Returns a copy of the object [AudioInputArgs](#new-audioinputinputargs-mixerargs-removefunction).
 
 ### input.setVolume(volume)
-- `volume` {Number}
-
 Sets the volume of the `AudioInput`.
 
+- `volume` {Number}
+
 ### input.setPreProcessData(preProcessData)
+Sets a new value for `preProcessData`.
+
 - `preProcessData` {Function}
 
-Sets an new value for `preProcessData`.
-
 ### input.setForceClose(forceClose)
-- `forceClose` {Boolean}
-
 Sets a new value for `forceClose`.
 
-### input.close()
-Closes the `AudioInput`.
+- `forceClose` {Boolean}
 
-> Note: `AudioInput` is automatically removes from the `AudioMixer` when it is closed.
-> If the `AudioInput` still contains data, it will be removed after it becomes empty.
-> To remove it immediately, set `forceClose` to `true`.
+### input.close()
+Removes itself from [AudioMixer](#class-audiomixer) if the buffer is empty or `forceClose` is set.
