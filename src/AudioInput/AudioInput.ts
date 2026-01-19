@@ -41,7 +41,8 @@ export class AudioInput extends Writable {
 	 * @param {Boolean | undefined} [inputParams.unsigned] Input audio is unsigned or not.
 	 * @param {Boolean | undefined} [inputParams.float] Input audio is float or not. Cannot be enabled with `inputParams.unsigned`.
 	 * @param {Number | undefined} [inputParams.volume] Input volume.
-	 * @param {Function | undefined} [inputParams.preProcessData] Processes the audio frame before it's be stored in the `AudioInput`.
+	 * @param {Function | undefined} [inputParams.preProcessData] Processes the audio frame before it's be stored in the `AudioInput`
+	 * @param {String} [inputParams.name] Sets a name for the `AudioInput`. Default: `input-n`.
 	 * @param {Boolean | undefined} [inputParams.forceClose] Closes the `AudioInput` and discards all audio frames from buffer.
 	 * @param {Boolean | undefined} [inputParams.correctByteSize] Corrects audio frame size if it's not aligned to {@link BitDepth}.
 	 *

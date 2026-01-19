@@ -16,6 +16,7 @@ Creates a new `AudioInput` instance.
   - `float` {Boolean | undefined} Input audio is float or not. Cannot be enabled with `unsigned`.
   - `volume` {Number | undefined} Input volume.
   - `preProcessData` {Function | undefined} Processes the audio frame before it's be stored in the `AudioInput`.
+  - `name` {String} Sets a name for the `AudioInput`. Default: `input-n`.
   - `forceClose` {Boolean | undefined} Closes the `AudioInput` and discards all audio frames from buffer.
   - `correctByteSize` {Boolean | undefined}  Corrects audio frame size if it's not aligned to [BitDepth](../../../src/Types/AudioTypes.ts#L3).
 - `mixerParams` {[MixerParams](../../../src/Types/ParamTypes.ts#L17)} `AudioMixer` params.
