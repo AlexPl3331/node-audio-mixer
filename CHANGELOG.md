@@ -1,3 +1,20 @@
+## [2.2.0] - 2026-01-19
+### Added
+- JSDoc comments.
+- AudioInput:
+  - New option: [name](./docs/api/v2/AudioInput.md#new-audioinputinputparams-mixerparams-removefunction) - Sets a name for the `AudioInput`. Default: `input-n`.
+
+### Changed
+- Removed volume limit.
+- Updated examples (resume mixer manually on versions older than 17.5.0).
+- Lowered required Node.js version from `18.0.0` to `15.0.0`
+
+### Fixed
+- Incorrect size of silent audio frame.
+- Out of bounds in `AudioInput.getData()`.
+
+<!-- === -->
+
 ## [2.1.0] - 2024-10-29
 ### Added
 - Float audio support.
@@ -18,7 +35,7 @@
   - New option: [correctByteSize](./docs/api/v2/AudioInput.md#new-audioinputinputparams-mixerparams-removefunction) - Corrects audio frame size if it's not aligned to `BitDepth`.
 
 ### Changed
-- Code performance ()
+- Code performance.
 
 ### Fixed
 - None
@@ -34,7 +51,7 @@
 
 ### Fixed
 - AudioMixer:
-  - Problem with `highWaterMark`
+  - Problem with `highWaterMark`.
 
 <!-- ===  -->
 
@@ -47,7 +64,7 @@
 
 ### Fixed
 - AudioMixer:
-  - Problems with mixing audio
+  - Problems with mixing audio.
 <!-- === -->
 
 ## [1.3.5] - 2023-10-16
