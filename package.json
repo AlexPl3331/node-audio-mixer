@@ -1,6 +1,6 @@
 {
   "name": "node-audio-mixer",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "PCM audio mixer with customizable parameters",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -8,7 +8,7 @@
     "prepublishOnly": "eslint && tsc"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=15.0.0"
   },
   "files": [
     "dist/src/**"
