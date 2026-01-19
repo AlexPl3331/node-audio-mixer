@@ -10,9 +10,14 @@ const mixer: AudioMixer = new AudioMixer({
 	bitDepth: 16,
 	channels: 1,
 });
-const outputFile = createWriteStream('./code.pcm');
+const writeStream = createWriteStream('./code.pcm');
 
-mixer.pipe(outputFile);
+// https://github.com/nodejs/node/issues/41785 (fixed in v17.5.0)
+writeStream.on('drain', () => {
+	mixer.resume();
+});
+
+mixer.pipe(writeStream);
 
 function getNextNumber(maxNumberLength: number, currentNumber: number): void {
 	if (currentNumber > maxNumberLength) {

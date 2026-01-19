@@ -1,66 +1,97 @@
 ## Class: AudioInput
-This class represents an `AudioInput`. It extends `Writable`.
+Represents a class that receives audio frames and
+gives them to [AudioMixer](./AudioMixer.md#class-audiomixer) when [AudioInput.getData](#audioinputgetdata) is called.
+
+Extends `Writable`.
 
 ### new AudioInput(inputParams, mixerParams, removeFunction?)
- - `inputParams` {[InputParams](./AudioMixer.md#audiomixercreateaudioinputinputparams)} `AudioInput` params.
-  
- - `mixerParams` {[MixerParams](./AudioMixer.md#new-audiomixermixerparams)} `AudioMixer` params.
-  
- - `selfRemoveFunction` {Function} Function to remove `AudioInput` from the `AudioMixer`.
-
 Creates a new `AudioInput` instance.
 
-```js
-const input = mixer.createAudioInput({
-    sampleRate: 48000,
-    channels: 1,
-    bitDepth: 16,
+- `inputParams` {[InputParams](../../../src/Types/ParamTypes.ts#L25)} `InputParams` configuration.
+  - `sampleRate` {[SampleRate](../../../src/Types/AudioTypes.ts#L1)} Input sample rate.
+  - `channels` {Number} Number of input channels.
+  - `bitDepth` {[BitDepth](../../../src/Types/AudioTypes.ts#L3)} Input bit depth.
+  - `endianness` {[Endianness](../../../src/Types/AudioTypes.ts#L5)} Input endianness. Default: `The endianness of your CPU`.
+  - `unsigned` {Boolean | undefined} Input audio is unsigned or not.
+  - `float` {Boolean | undefined} Input audio is float or not. Cannot be enabled with `unsigned`.
+  - `volume` {Number | undefined} Input volume.
+  - `preProcessData` {Function | undefined} Processes the audio frame before it's be stored in the `AudioInput`.
+  - `name` {String} Sets a name for the `AudioInput`. Default: `input-n`.
+  - `forceClose` {Boolean | undefined} Closes the `AudioInput` and discards all audio frames from buffer.
+  - `correctByteSize` {Boolean | undefined}  Corrects audio frame size if it's not aligned to [BitDepth](../../../src/Types/AudioTypes.ts#L3).
+- `mixerParams` {[MixerParams](../../../src/Types/ParamTypes.ts#L17)} `AudioMixer` params.
+- `selfRemoveFunction` {Function} Function to remove `AudioInput` from the `AudioMixer`.
+
+**Example:**
+```typescript
+const firstInput = mixer.createAudioInput({
+	 sampleRate: 48000,
+	 channles: 1,
+	 bitDepth: 16,
 });
+
+// Or you can create a standalone AudioInput
+const secondInput = new AudioInput(
+	{
+		sampleRate: 48000,
+		channels: 1,
+		bitDepth: 16,
+		volume: 90,
+	},
+	{
+		sampleRate: 48000,
+		channels: 1,
+		bitDepth: 16,
+		volume: 90,
+	},
+);
 ```
 
 ### AudioInput.params
-Getter: Returns an object of `inputParams`.
+Reading returns an immutable [InputParams](../../../src/Types/ParamTypes.ts#L25) object.
+Assigning updates the [AudioInput](#class-audioinput) params.
 
-Setter: Sets the parameters using an object of `inputParams`.
+**Example:**
+```typescript
+// read params from input
+console.log(firstInput.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, endianness: "LE" }
 
-```js
-console.log(input.params); // { sampleRate: 48000, channels: 1, bitDepth: 16 }
-
-input.params = {
-    volume: 50,
-    forceClose: true,
+// Assign new params to the firstInput
+firstInput.params = {
+	volume: 50,
+	forceClose: true,
 };
 
-console.log(input.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, volume: 50, forceClose: true }
+// Read it again
+console.log(firstInput.params); // { sampleRate: 48000, channels: 1, bitDepth: 16, endianness: "LE" volume: 50, forceClose: true }
 ```
 
-### input.destroy()
-Destroys the `AudioInput`.
+### AudioInput.dataSize 
+Returns the buffer size.
 
-```js
-input.destroy();
+**Returns:** {Number} Buffer size.
+
+**Example:**
+```typescript
+console.log(firstInput.dataSize);
 ```
 
-> Note: `AudioInput` is automatically removes from the `AudioMixer` when it's closed and empty.
-> To remove it immediately (with remaining data), set `forceClose` to `true`.
+### AudioInput.getData()
+Returns an audio frame with a given size.
 
+- `size` {Number} Audio frame size.
 
-## Events: AudioInput
+**Returns:** {Uint8Array} An audio frame with given size.
 
-### Event 'end'
-Emitted when you use `destroy` in the `AudioInput`.
-
-```js
-input.on('end', () => {
-  console.log('AudioInput has finished its work');
-})
+**Example:**
+```typescript
+console.log(firstInput.getData());
 ```
 
-### Event 'close'
-Emitted when the `AudioInput` is empty.
+### AudioInput.destroy()
+Removes itself from [AudioMixer](./AudioMixer.md#class-audiomixer) if the buffer is empty or `forceClose` is set.
 
-```js
-input.on('close', () => {
-  console.log('AudioInput has closed');
-})
+**Example:**
+```typescript
+firstInput.destroy();
 ```

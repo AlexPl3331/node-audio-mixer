@@ -1,6 +1,6 @@
 {
   "name": "node-audio-mixer",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "PCM audio mixer with customizable parameters",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -8,7 +8,7 @@
     "prepublishOnly": "eslint && tsc"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=15.0.0"
   },
   "files": [
     "dist/src/**"
@@ -26,13 +26,14 @@
   "author": "Alex Pl (https://github.com/AlexPl3331)",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^22.5.4",
-    "@typescript-eslint/eslint-plugin": "^8.5.0",
-    "@typescript-eslint/parser": "^8.5.0",
-    "eslint": "^9.10.0",
+    "@types/node": "^24.10.9",
+    "@typescript-eslint/eslint-plugin": "^8.53.0",
+    "@typescript-eslint/parser": "^8.53.0",
+    "eslint": "^9.39.2",
     "eslint-config-xo-typescript": "^6.0.0",
-    "globals": "^15.9.0",
+    "globals": "^17.0.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.6.2"
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.53.0"
   }
 }

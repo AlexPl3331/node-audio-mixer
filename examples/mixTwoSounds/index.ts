@@ -22,6 +22,11 @@ const inputCampfire = mixer.createAudioInput({
 
 const writeStream = createWriteStream('./mixed.pcm');
 
+// https://github.com/nodejs/node/issues/41785 (fixed in v17.5.0)
+writeStream.on('drain', () => {
+	mixer.resume();
+});
+
 const natureSound = createReadStream('./sounds/nature/nature.pcm');
 const campFireSound = createReadStream('./sounds/nature/campfire.pcm');
 

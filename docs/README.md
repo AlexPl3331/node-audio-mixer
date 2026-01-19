@@ -8,15 +8,12 @@
 - [Events: AudioMixer](./api/v2/AudioMixer.md#events-audiomixer)
   - [Event 'createInput'](./api/v2/AudioMixer.md#event-createinput)
   - [Event 'removeInput'](./api/v2/AudioMixer.md#event-removeinput)
-  - [Event 'end'](./api/v2/AudioMixer.md#event-end)
-  - [Event 'close'](./api/v2/AudioMixer.md#event-close)
 - [Class: AudioInput](./api/v2/AudioInput.md#class-audioinput)
   - [new AudioInput(inputArgs, mixerArgs, removeFunction?)](./api/v2/AudioInput.md#new-audioinputinputparams-mixerparams-removefunction)
-  - [input.params](./api/v2/AudioInput.md#audioinputparams)
-  - [input.destroy()](./api/v2/AudioInput.md#inputdestroy)
-- [Events: AudioInput](./api/v2/AudioInput.md#events-audioinput)
-  - [Event 'end'](./api/v2/AudioInput.md#event-end)
-  - [Event 'close'](./api/v2/AudioInput.md#event-close)
+  - [AudioInput.params](./api/v2/AudioInput.md#audioinputparams)
+  - [AudioInput.dataSize](./api/v2/AudioInput.md#audioinputdatasize)
+  - [AudioInput.getData()](./api/v2/AudioInput.md#audioinputgetdata)
+  - [AudioInput.destroy()](./api/v2/AudioInput.md#inputdestroy)
 
-> Note: This is the documentation for AudioMixer v2.
-> For the API documentation of AudioMixer v1, click [here](./api/v1/API.md)
+> Note: This is the documentation for `node-audio-mixer` v2.
+> For the API documentation of `node-audio-mixer` v1, click [here](./api/v1/API.md)

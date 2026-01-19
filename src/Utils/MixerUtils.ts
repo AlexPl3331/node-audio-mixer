@@ -42,11 +42,7 @@ export class MixerUtils implements AudioUtils {
 	}
 
 	public checkVolume(): this {
-		const volume = this.audioMixerParams.volume ?? 100;
-
-		if (volume < 100) {
-			changeVolume(this.mixedData, this.changedParams);
-		}
+		changeVolume(this.mixedData, this.changedParams);
 
 		return this;
 	}

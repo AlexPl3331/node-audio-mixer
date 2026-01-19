@@ -23,6 +23,7 @@ export type MixerParams = {
 } & BasedParams;
 
 export type InputParams = {
+	name?: string;
 	forceClose?: boolean;
 	correctByteSize?: boolean;
 } & BasedParams;
