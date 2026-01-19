@@ -61,7 +61,7 @@ Create a new `AudioInput` instance and add it to the `AudioMixer`.
   - `endianness` {String} Input endianness. <br> Default: `The endianness of your CPU`.
   - `fillChunk` {Boolean} Fill the chunk with zeroes when it's size is less than the `highWaterMark`. <br> Default: `false`.
   - `preProcessData` {Function} Processes the audio frame before it's be stored in the `AudioInput`. <br> Default: `Passes the audio frame unchanged`.
-  - `forceClose` {Boolean}Closes the `AudioInput` and discards all audio frames from buffer. <br> Default: `false`.
+  - `forceClose` {Boolean} Closes the `AudioInput` and discards all audio frames from buffer. <br> Default: `false`.
 
 
 ### mixer.removeAudioInput(audioInput)
