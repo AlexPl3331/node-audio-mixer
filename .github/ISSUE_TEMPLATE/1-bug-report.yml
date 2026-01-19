@@ -1,0 +1,46 @@
+name: Bug report
+description: Create a report to help us improve
+labels: ["bug"]
+body:
+  - type: input
+    attributes:
+      label: Version
+      description: |
+        Output of `node -v`.
+        Please verify that you are using [supported version](https://github.com/AlexPl3331/node-audio-mixer/blob/main/README.md#installation) of Node.js.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: What is the expected behavior?
+      description: If possible please provide textual output instead of screenshots.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What do you see instead?
+      description: If possible please provide textual output instead of screenshots.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: How often does it reproduce? Is there a required condition?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps that reproduce the bug
+      description: >
+        Enter a simple code snippet that can be run using `node`
+          directly without installing third-party dependencies
+          or downloading code from the internet (i.e. no ZIP archive, no GitHub
+          repository, etc.).
+      placeholder: "1. First step..."
+      value: "1. \n2. \n3. "
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional information
+    validations:
+      required: false

@@ -1,0 +1,19 @@
+name: Feature request
+description: Suggest a significant new feature
+labels: ["enhancement"]
+body:
+  - type: textarea
+    attributes:
+      label: What is the problem this feature will solve?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What is the feature you are proposing to solve the problem?
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What alternatives have you considered?
+    validations:
+      required: false
